@@ -1,7 +1,7 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="utf-8">
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>UNO Online</title>
 
@@ -9,2139 +9,2181 @@
 *{box-sizing:border-box}
 
 body{
-  margin:0;
-  font-family:Tahoma,Arial,sans-serif;
-  color:#fff;
-  min-height:100vh;
-  background:radial-gradient(circle at 50% 15%,#24116b 0,#09041d 38%,#02030b 100%);
-  overflow-x:hidden
+margin:0;
+font-family:Tahoma,Arial,sans-serif;
+color:#fff;
+min-height:100vh;
+background:
+radial-gradient(circle at 50% 15%,#24116b 0,#09041d 38%,#02030b 100%);
+overflow-x:hidden
 }
 
 body:before{
-  content:"";
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-  z-index:-1;
-  background:linear-gradient(115deg,transparent 20%,#6d20ff12 50%,transparent 80%);
-  filter:blur(20px)
+content:"";
+position:fixed;
+inset:0;
+pointer-events:none;
+z-index:-1;
+background:linear-gradient(115deg,transparent 20%,#6d20ff12 50%,transparent 80%);
+filter:blur(20px)
 }
 
 button,input{font:inherit}
 
 .screen{
-  min-height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:24px
+min-height:100vh;
+display:flex;
+align-items:center;
+justify-content:center;
+padding:24px
 }
 
 .panel{
-  width:min(620px,94vw);
-  background:#050611ed;
-  border:2px solid #7c35ff;
-  border-radius:28px;
-  padding:30px;
-  box-shadow:0 0 25px #7b25ff66,0 0 90px #ff20e633,inset 0 0 40px #18205c55
+width:min(620px,94vw);
+background:#050611ed;
+border:2px solid #7c35ff;
+border-radius:28px;
+padding:30px;
+box-shadow:
+0 0 25px #7b25ff66,
+0 0 90px #ff20e633,
+inset 0 0 40px #18205c55
 }
 
 .logo{
-  text-align:center;
-  font-size:78px;
-  font-weight:1000;
-  font-style:italic;
-  letter-spacing:-5px;
-  color:#fff;
-  text-shadow:5px 5px 0 #ed162c,-3px -3px 0 #ffd400,0 0 30px #ff3155
+text-align:center;
+font-size:78px;
+font-weight:1000;
+font-style:italic;
+letter-spacing:-5px;
+color:#fff;
+text-shadow:
+5px 5px 0 #ed162c,
+-3px -3px 0 #ffd400,
+0 0 30px #ff3155
 }
 
 .sub{
-  text-align:center;
-  color:#d6d2ff;
-  font-size:16px
+text-align:center;
+color:#d6d2ff;
+font-size:16px
 }
 
 .field{
-  width:100%;
-  padding:15px;
-  border-radius:15px;
-  border:1px solid #6d70a4;
-  background:#08091b;
-  color:#fff;
-  margin:8px 0 11px;
-  outline:none
+width:100%;
+padding:15px;
+border-radius:15px;
+border:1px solid #6d70a4;
+background:#08091b;
+color:#fff;
+margin:8px 0 11px;
+outline:none
 }
 
 .field:focus{
-  border-color:#ff28c8;
-  box-shadow:0 0 16px #ff28c855
+border-color:#ff28c8;
+box-shadow:0 0 16px #ff28c855
 }
 
 .row{
-  display:flex;
-  gap:11px
+display:flex;
+gap:11px
 }
 
 .btn{
-  border:1px solid #ffffff25;
-  border-radius:15px;
-  padding:14px 18px;
-  font-weight:900;
-  cursor:pointer;
-  box-shadow:0 7px 0 #0007,0 0 20px #0005;
-  transition:.15s
+border:1px solid #ffffff25;
+border-radius:15px;
+padding:14px 18px;
+font-weight:900;
+cursor:pointer;
+box-shadow:0 7px 0 #0007,0 0 20px #0005;
+transition:.15s
 }
 
 .btn:hover{
-  transform:translateY(-2px);
-  filter:brightness(1.12)
+transform:translateY(-2px);
+filter:brightness(1.12)
 }
 
 .btn:active{
-  transform:translateY(2px);
-  box-shadow:0 3px 0 #0007
+transform:translateY(2px);
+box-shadow:0 3px 0 #0007
 }
 
 .btn:disabled{
-  opacity:.45;
-  cursor:not-allowed
+opacity:.45;
+cursor:not-allowed;
+transform:none
 }
 
 .primary{
-  background:linear-gradient(135deg,#073eff,#8c18ff,#ff16c8);
-  color:#fff
+background:linear-gradient(135deg,#073eff,#8c18ff,#ff16c8);
+color:#fff
 }
 
 .secondary{
-  background:linear-gradient(135deg,#171b45,#37206e);
-  color:#fff
+background:linear-gradient(135deg,#171b45,#37206e);
+color:#fff
 }
 
 .green{
-  background:linear-gradient(135deg,#00a968,#00e19a);
-  color:#06130f
+background:linear-gradient(135deg,#00a968,#00e19a);
+color:#06130f
 }
 
 .hidden{
-  display:none!important
-}
-
-.modal{
-  position:fixed;
-  inset:0;
-  background:#000b;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  z-index:50;
-  backdrop-filter:blur(8px)
-}
-
-.modalbox{
-  background:#070818f5;
-  border:2px solid #b02cff;
-  border-radius:22px;
-  padding:24px;
-  width:min(460px,92vw);
-  text-align:center;
-  box-shadow:0 0 40px #a323ff66
-}
-
-.colors{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px
-}
-
-.cb{
-  padding:14px;
-  border:0;
-  border-radius:12px;
-  font-weight:900;
-  cursor:pointer
-}
-
-#game{
-  min-height:100vh;
-  display:grid;
-  grid-template-rows:auto 1fr auto;
-  gap:12px;
-  padding:14px;
-  max-width:1550px;
-  margin:auto
-}
-
-.top{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:10px;
-  background:#050611e8;
-  border:1px solid #6d36d9;
-  border-radius:18px;
-  padding:10px 14px;
-  box-shadow:0 0 22px #6d20ff33
-}
-
-.brand{
-  font-size:29px;
-  font-weight:1000;
-  font-style:italic;
-  color:#fff;
-  text-shadow:2px 2px #ff204c,0 0 18px #ffd21f
-}
-
-.pill{
-  background:#0d0f2b;
-  border:1px solid #5e5ba0;
-  border-radius:99px;
-  padding:8px 12px;
-  font-size:13px
-}
-
-.table{
-  position:relative;
-  min-height:590px;
-  background:radial-gradient(ellipse at center,#123f37,#071d20 48%,#030713 100%);
-  border:7px solid #55259a;
-  border-radius:38%/24%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  box-shadow:0 0 35px #7a28ff44,inset 0 0 60px #000
-}
-
-.table:before{
-  content:"";
-  position:absolute;
-  inset:3%;
-  border:1px solid #ff24d933;
-  border-radius:38%/24%;
-  box-shadow:inset 0 0 30px #ff24d911
-}
-
-.center{
-  display:flex;
-  gap:22px;
-  z-index:2
-}
-
-.deck,.card{
-  width:86px;
-  height:122px;
-  border-radius:14px;
-  border:3px solid #fff;
-  box-shadow:0 9px 24px #000b,0 0 15px #ffffff22
-}
-
-.deck{
-  background:repeating-linear-gradient(45deg,#10164e 0 7px,#43208b 7px 14px);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:28px;
-  font-weight:1000;
-  cursor:pointer
-}
-
-.card{
-  position:relative;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color:#fff;
-  font-size:35px;
-  font-weight:1000
-}
-
-.red{background:#ed2538}
-.yellow{background:#f3c900;color:#111}
-.greenC{background:#11a968}
-.blue{background:#2479e7}
-
-.wild{
-  background:linear-gradient(
-    135deg,
-    #ed2538 0 25%,
-    #f3c900 25% 50%,
-    #11a968 50% 75%,
-    #2479e7 75%
-  )
-}
-
-.oval{
-  position:absolute;
-  width:65%;
-  height:72%;
-  border:3px solid #ffffffaa;
-  border-radius:50%;
-  transform:rotate(-30deg)
-}
-
-.v{
-  z-index:2
-}
-
-.player{
-  position:absolute;
-  background:#070914e8;
-  border:1px solid #6b65a7;
-  border-radius:16px;
-  padding:8px 13px;
-  text-align:center;
-  min-width:130px;
-  box-shadow:0 0 20px #0008
-}
-
-.p0{
-  bottom:12px;
-  left:50%;
-  transform:translateX(-50%)
-}
-
-.p1{
-  top:13px;
-  left:50%;
-  transform:translateX(-50%)
-}
-
-.p2{
-  left:12px;
-  top:50%;
-  transform:translateY(-50%)
-}
-
-.p3{
-  right:12px;
-  top:50%;
-  transform:translateY(-50%)
-}
-
-.active{
-  border-color:#ffdb35;
-  box-shadow:0 0 28px #ffdb3566
-}
-
-.handbox{
-  background:#050611ee;
-  border:1px solid #6534bd;
-  border-radius:18px;
-  padding:10px;
-  box-shadow:0 0 25px #7b22ff22
-}
-
-.hand{
-  display:flex;
-  justify-content:center;
-  align-items:flex-end;
-  min-height:125px;
-  overflow-x:auto;
-  direction:ltr
-}
-
-.mycard{
-  margin:0 -7px;
-  cursor:pointer;
-  transition:.16s
-}
-
-.mycard:hover{
-  transform:translateY(-15px) scale(1.03);
-  z-index:4
-}
-
-.actions{
-  text-align:center;
-  margin-top:7px
+display:none!important
 }
 
 .note{
-  text-align:center;
-  color:#b8b4de;
-  font-size:12px
+text-align:center;
+color:#b8b4de;
+font-size:12px
+}
+
+.modal{
+position:fixed;
+inset:0;
+background:#000b;
+display:flex;
+align-items:center;
+justify-content:center;
+z-index:50;
+backdrop-filter:blur(8px)
+}
+
+.modalbox{
+background:#070818f5;
+border:2px solid #b02cff;
+border-radius:22px;
+padding:24px;
+width:min(460px,92vw);
+text-align:center;
+box-shadow:0 0 40px #a323ff66
+}
+
+.colors{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px
+}
+
+.cb{
+padding:14px;
+border:0;
+border-radius:12px;
+font-weight:900;
+cursor:pointer
+}
+
+#game{
+min-height:100vh;
+display:grid;
+grid-template-rows:auto 1fr auto;
+gap:12px;
+padding:14px;
+max-width:1550px;
+margin:auto
+}
+
+.top{
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:10px;
+background:#050611e8;
+border:1px solid #6d36d9;
+border-radius:18px;
+padding:10px 14px;
+box-shadow:0 0 22px #6d20ff33
+}
+
+.brand{
+font-size:29px;
+font-weight:1000;
+font-style:italic;
+color:#fff;
+text-shadow:2px 2px #ff204c,0 0 18px #ffd21f
+}
+
+.pill{
+background:#0d0f2b;
+border:1px solid #5e5ba0;
+border-radius:99px;
+padding:8px 12px;
+font-size:13px;
+display:inline-block
+}
+
+.table{
+position:relative;
+min-height:590px;
+background:
+radial-gradient(ellipse at center,#123f37,#071d20 48%,#030713 100%);
+border:7px solid #55259a;
+border-radius:38%/24%;
+display:flex;
+align-items:center;
+justify-content:center;
+box-shadow:0 0 35px #7a28ff44,inset 0 0 60px #000
+}
+
+.table:before{
+content:"";
+position:absolute;
+inset:3%;
+border:1px solid #ff24d933;
+border-radius:38%/24%;
+box-shadow:inset 0 0 30px #ff24d911
+}
+
+.center{
+display:flex;
+gap:22px;
+z-index:2
+}
+
+.deck,.card{
+width:86px;
+height:122px;
+border-radius:14px;
+border:3px solid #fff;
+box-shadow:0 9px 24px #000b,0 0 15px #ffffff22
+}
+
+.deck{
+background:repeating-linear-gradient(
+45deg,
+#10164e 0 7px,
+#43208b 7px 14px
+);
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:28px;
+font-weight:1000;
+cursor:pointer
+}
+
+.card{
+position:relative;
+display:flex;
+align-items:center;
+justify-content:center;
+color:#fff;
+font-size:35px;
+font-weight:1000
+}
+
+.red{background:#ed2538}
+
+.yellow{
+background:#f3c900;
+color:#111
+}
+
+.greenC{background:#11a968}
+
+.blue{background:#2479e7}
+
+.wild{
+background:linear-gradient(
+135deg,
+#ed2538 0 25%,
+#f3c900 25% 50%,
+#11a968 50% 75%,
+#2479e7 75%
+)
+}
+
+.oval{
+position:absolute;
+width:65%;
+height:72%;
+border:3px solid #ffffffaa;
+border-radius:50%;
+transform:rotate(-30deg)
+}
+
+.v{z-index:2}
+
+.player{
+position:absolute;
+background:#070914e8;
+border:1px solid #6b65a7;
+border-radius:16px;
+padding:8px 13px;
+text-align:center;
+min-width:130px;
+box-shadow:0 0 20px #0008
+}
+
+.p0{
+bottom:12px;
+left:50%;
+transform:translateX(-50%)
+}
+
+.p1{
+top:13px;
+left:50%;
+transform:translateX(-50%)
+}
+
+.p2{
+left:12px;
+top:50%;
+transform:translateY(-50%)
+}
+
+.p3{
+right:12px;
+top:50%;
+transform:translateY(-50%)
+}
+
+.active{
+border-color:#ffdb35;
+box-shadow:0 0 28px #ffdb3566
 }
 
 .turn{
-  position:absolute;
-  bottom:55px;
-  background:#050611dd;
-  border:1px solid #ff25d5;
-  color:#fff;
-  border-radius:99px;
-  padding:8px 14px;
-  box-shadow:0 0 18px #ff25d544
+position:absolute;
+bottom:55px;
+background:#050611dd;
+border:1px solid #ff25d5;
+color:#fff;
+border-radius:99px;
+padding:8px 14px;
+box-shadow:0 0 18px #ff25d544
+}
+
+.handbox{
+background:#050611ee;
+border:1px solid #6534bd;
+border-radius:18px;
+padding:10px;
+box-shadow:0 0 25px #7b22ff22
+}
+
+.hand{
+display:flex;
+justify-content:center;
+align-items:flex-end;
+min-height:125px;
+overflow-x:auto;
+direction:ltr;
+padding:5px
+}
+
+.mycard{
+margin:0 -7px;
+cursor:pointer;
+transition:.16s
+}
+
+.mycard:hover{
+transform:translateY(-15px) scale(1.03);
+z-index:4
+}
+
+.actions{
+text-align:center;
+margin-top:7px
 }
 
 .toast{
-  position:fixed;
-  left:50%;
-  bottom:25px;
-  transform:translateX(-50%);
-  background:#050611f5;
-  border:1px solid #ff25d5;
-  padding:11px 18px;
-  border-radius:99px;
-  z-index:70;
-  opacity:0;
-  box-shadow:0 0 22px #ff25d555;
-  transition:.2s
+position:fixed;
+left:50%;
+bottom:25px;
+transform:translateX(-50%);
+background:#050611f5;
+border:1px solid #ff25d5;
+padding:11px 18px;
+border-radius:99px;
+z-index:70;
+opacity:0;
+pointer-events:none;
+box-shadow:0 0 22px #ff25d555;
+transition:.2s
 }
 
 .toast.show{
-  opacity:1
+opacity:1
 }
 
 .devnames{
-  font-size:21px;
-  line-height:2.2;
-  margin:10px 0
+font-size:21px;
+line-height:2.2;
+margin:10px 0
 }
 
 .devline{
-  height:1px;
-  background:linear-gradient(90deg,transparent,#ff24c8,transparent);
-  margin:8px 0
+height:1px;
+background:linear-gradient(
+90deg,
+transparent,
+#ff24c8,
+transparent
+);
+margin:8px 0
 }
 
 .dpyt{
-  display:inline-flex;
-  text-decoration:none;
-  cursor:pointer;
-  align-items:center;
-  gap:10px;
-  margin-top:6px;
-  color:#ff2aa9;
-  font-weight:1000;
-  font-size:23px
+display:inline-flex;
+text-decoration:none;
+cursor:pointer;
+align-items:center;
+gap:10px;
+margin-top:6px;
+color:#ff2aa9;
+font-weight:1000;
+font-size:23px
 }
 
 .dpytIcon{
-  width:46px;
-  height:46px;
-  border-radius:10px;
-  background:#ff0b65;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  color:#fff;
-  font-size:24px;
-  box-shadow:0 0 16px #ff0b6566
+width:46px;
+height:46px;
+border-radius:10px;
+background:#ff0b65;
+display:inline-flex;
+align-items:center;
+justify-content:center;
+color:#fff;
+font-size:24px;
+box-shadow:0 0 16px #ff0b6566
 }
 
 .chatToggle{
-  position:fixed;
-  right:18px;
-  bottom:175px;
-  z-index:60;
-  width:58px;
-  height:58px;
-  border:2px solid #ff2ac8;
-  border-radius:50%;
-  background:linear-gradient(135deg,#152dff,#ff18c8);
-  color:#fff;
-  font-size:25px;
-  cursor:pointer;
-  box-shadow:0 0 24px #ff20c866,0 8px 20px #0008
+position:fixed;
+right:18px;
+bottom:175px;
+z-index:60;
+width:58px;
+height:58px;
+border:2px solid #ff2ac8;
+border-radius:50%;
+background:linear-gradient(135deg,#152dff,#ff18c8);
+color:#fff;
+font-size:25px;
+cursor:pointer;
+box-shadow:0 0 24px #ff20c866,0 8px 20px #0008
 }
 
 .chatPanel{
-  position:fixed;
-  right:18px;
-  bottom:245px;
-  width:min(350px,calc(100vw - 36px));
-  height:430px;
-  background:#050611f7;
-  border:2px solid #7d2dff;
-  border-radius:20px;
-  z-index:59;
-  display:flex;
-  flex-direction:column;
-  box-shadow:0 0 35px #7b22ff66,0 15px 40px #000b;
-  overflow:hidden
+position:fixed;
+right:18px;
+bottom:245px;
+width:min(350px,calc(100vw - 36px));
+height:430px;
+background:#050611f7;
+border:2px solid #7d2dff;
+border-radius:20px;
+z-index:59;
+display:flex;
+flex-direction:column;
+box-shadow:0 0 35px #7b22ff66,0 15px 40px #000b;
+overflow:hidden
 }
 
 .chatHead{
-  padding:12px 14px;
-  background:linear-gradient(90deg,#101a52,#46105d);
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  font-weight:1000
+padding:12px 14px;
+background:linear-gradient(90deg,#101a52,#46105d);
+display:flex;
+align-items:center;
+justify-content:space-between;
+font-weight:1000
 }
 
 .chatClose{
-  background:none;
-  border:0;
-  color:#fff;
-  font-size:20px;
-  cursor:pointer
+background:none;
+border:0;
+color:#fff;
+font-size:20px;
+cursor:pointer
 }
 
 .chatMsgs{
-  flex:1;
-  overflow:auto;
-  padding:12px;
-  display:flex;
-  flex-direction:column;
-  gap:8px
+flex:1;
+overflow:auto;
+padding:12px;
+display:flex;
+flex-direction:column;
+gap:8px
 }
 
 .chatMsg{
-  max-width:85%;
-  background:#10132e;
-  border:1px solid #3f4480;
-  border-radius:13px;
-  padding:8px 10px;
-  align-self:flex-start;
-  word-break:break-word
+max-width:85%;
+background:#10132e;
+border:1px solid #3f4480;
+border-radius:13px;
+padding:8px 10px;
+align-self:flex-start;
+word-break:break-word
 }
 
 .chatMsg.mine{
-  align-self:flex-end;
-  border-color:#ff2ac8;
-  background:#28103a
+align-self:flex-end;
+border-color:#ff2ac8;
+background:#28103a
 }
 
 .chatName{
-  font-size:11px;
-  color:#ff58d8;
-  margin-bottom:3px
+font-size:11px;
+color:#ff58d8;
+margin-bottom:3px
 }
 
 .chatComposer{
-  padding:9px;
-  border-top:1px solid #383a67
+padding:9px;
+border-top:1px solid #383a67
 }
 
 .emojiRow{
-  display:flex;
-  gap:4px;
-  margin-bottom:7px;
-  flex-wrap:wrap
+display:flex;
+gap:4px;
+margin-bottom:7px;
+flex-wrap:wrap
 }
 
 .emojiBtn{
-  background:#0d1030;
-  border:1px solid #4a4e85;
-  border-radius:8px;
-  padding:4px 7px;
-  cursor:pointer;
-  font-size:17px
+background:#0d1030;
+border:1px solid #4a4e85;
+border-radius:8px;
+padding:4px 7px;
+cursor:pointer;
+font-size:17px
 }
 
 .chatForm{
-  display:flex;
-  gap:6px
+display:flex;
+gap:6px
 }
 
 .chatInput{
-  flex:1;
-  background:#090b20;
-  border:1px solid #555b92;
-  color:#fff;
-  border-radius:10px;
-  padding:10px;
-  outline:none
+flex:1;
+background:#090b20;
+border:1px solid #555b92;
+color:#fff;
+border-radius:10px;
+padding:10px;
+outline:none
 }
 
 .chatSend{
-  background:linear-gradient(135deg,#264eff,#d51cff);
-  border:0;
-  color:#fff;
-  border-radius:10px;
-  padding:0 13px;
-  font-weight:900;
-  cursor:pointer
+background:linear-gradient(135deg,#264eff,#d51cff);
+border:0;
+color:#fff;
+border-radius:10px;
+padding:0 13px;
+font-weight:900;
+cursor:pointer
 }
 
 .chatBadge{
-  position:absolute;
-  right:-2px;
-  top:-2px;
-  background:#ff245f;
-  color:#fff;
-  border-radius:50%;
-  min-width:19px;
-  height:19px;
-  font-size:11px;
-  display:flex;
-  align-items:center;
-  justify-content:center
+position:absolute;
+right:-2px;
+top:-2px;
+background:#ff245f;
+color:#fff;
+border-radius:50%;
+min-width:19px;
+height:19px;
+font-size:11px;
+display:flex;
+align-items:center;
+justify-content:center
 }
 
 @media(max-width:650px){
-  .logo{font-size:62px}
-  .table{min-height:500px}
-  .card,.deck{
-    width:70px;
-    height:100px
-  }
-  .top{
-    flex-direction:column
-  }
-  .p2{left:5px}
-  .p3{right:5px}
-  .player{
-    min-width:95px;
-    font-size:12px
-  }
+
+.logo{
+font-size:62px
+}
+
+.table{
+min-height:500px
+}
+
+.card,.deck{
+width:70px;
+height:100px
+}
+
+.top{
+flex-direction:column
+}
+
+.p2{
+left:5px
+}
+
+.p3{
+right:5px
+}
+
+.player{
+min-width:95px;
+font-size:12px
+}
+
+.hand{
+justify-content:flex-start
+}
 }
 </style>
 </head>
 
 <body>
 
-<!-- شاشة الدخول -->
+<!-- LOGIN -->
 <div id="login" class="screen">
-  <div class="panel">
+<div class="panel">
 
-    <div class="logo">UNO</div>
+<div class="logo">UNO</div>
 
-    <p class="sub">
-      العب أونلاين مع أصدقائك أو العب ضد البوتات
-    </p>
+<p class="sub">
+العب أونلاين مع أصدقائك أو العب ضد البوتات
+</p>
 
-    <input
-      id="name"
-      class="field"
-      maxlength="18"
-      placeholder="اسمك"
-      value="راشد"
-    >
-
-    <div class="row">
-
-      <button
-        id="createBtn"
-        class="btn primary"
-        style="flex:1"
-        onclick="createRoom()"
-        disabled
-      >
-        إنشاء غرفة
-      </button>
-
-      <button
-        id="joinBtn"
-        class="btn secondary"
-        style="flex:1"
-        onclick="joinRoom()"
-        disabled
-      >
-        انضمام
-      </button>
-
-    </div>
-
-    <input
-      id="room"
-      class="field"
-      maxlength="8"
-      placeholder="رمز الغرفة"
-      style="text-transform:uppercase"
-    >
-
-    <button
-      class="btn green"
-      style="width:100%"
-      onclick="startBot()"
-    >
-      🤖 اللعب مع بوت
-    </button>
-
-    <button
-      class="btn secondary"
-      style="width:100%;margin-top:10px"
-      onclick="openDev()"
-    >
-      👥 المطورين
-    </button>
-
-    <p id="conn" class="note">
-      الاتصال: جاري الاتصال...
-    </p>
-
-  </div>
-</div>
-
-<!-- اللوبي -->
-<div id="lobby" class="screen hidden">
-  <div class="panel">
-
-    <div class="logo" style="font-size:54px">
-      UNO
-    </div>
-
-    <h2 style="text-align:center">
-      غرفة اللعب
-    </h2>
-
-    <div
-      id="roomCode"
-      style="text-align:center;font-size:42px;font-weight:1000"
-    ></div>
-
-    <p class="sub">
-      أرسل الرمز لأصدقائك
-    </p>
-
-    <div id="players"></div>
-
-    <button
-      id="startBtn"
-      class="btn primary"
-      style="width:100%;margin-top:15px"
-      onclick="startOnline()"
-    >
-      ابدأ اللعبة
-    </button>
-
-    <button
-      class="btn secondary"
-      style="width:100%;margin-top:10px"
-      onclick="location.reload()"
-    >
-      خروج
-    </button>
-
-  </div>
-</div>
-
-<!-- اللعبة -->
-<div id="game" class="hidden">
-
-  <div class="top">
-
-    <div class="brand">
-      UNO ONLINE
-    </div>
-
-    <div>
-
-      <span class="pill">
-        👤 <b id="me"></b>
-      </span>
-
-      <span class="pill">
-        غرفة: <b id="codeTop"></b>
-      </span>
-
-      <button
-        class="btn secondary"
-        onclick="location.reload()"
-      >
-        خروج
-      </button>
-
-    </div>
-
-  </div>
-
-  <main class="table">
-
-    <div id="board"></div>
-
-    <div class="center">
-
-      <div
-        class="deck"
-        onclick="drawCard()"
-      >
-        UNO
-      </div>
-
-      <div id="discard"></div>
-
-    </div>
-
-    <div id="turn" class="turn"></div>
-
-  </main>
-
-  <section class="handbox">
-
-    <div id="hand" class="hand"></div>
-
-    <div class="actions">
-
-      <button
-        class="btn secondary"
-        onclick="drawCard()"
-      >
-        سحب ورقة
-      </button>
-
-      <button
-        class="btn green"
-        onclick="sayUno()"
-      >
-        UNO!
-      </button>
-
-    </div>
-
-    <div id="status" class="note"></div>
-
-  </section>
-
-</div>
-
-<!-- زر الدردشة -->
-<button
-  id="chatToggle"
-  class="chatToggle hidden"
-  onclick="toggleChat()"
-  aria-label="الدردشة"
+<input
+id="name"
+class="field"
+maxlength="18"
+placeholder="اسمك"
+value="راشد"
 >
-  💬
-  <span id="chatBadge" class="chatBadge hidden">0</span>
+
+<div class="row">
+
+<button
+id="createBtn"
+class="btn primary"
+style="flex:1"
+onclick="createRoom()"
+disabled
+>
+إنشاء غرفة
 </button>
 
-<!-- الدردشة -->
+<button
+id="joinBtn"
+class="btn secondary"
+style="flex:1"
+onclick="joinRoom()"
+disabled
+>
+انضمام
+</button>
+
+</div>
+
+<input
+id="room"
+class="field"
+maxlength="8"
+placeholder="رمز الغرفة"
+style="text-transform:uppercase"
+>
+
+<button
+class="btn green"
+style="width:100%"
+onclick="startBot()"
+>
+🤖 اللعب مع بوت
+</button>
+
+<button
+class="btn secondary"
+style="width:100%;margin-top:10px"
+onclick="openDev()"
+>
+👥 المطورين
+</button>
+
+<p id="conn" class="note">
+الاتصال: جاري الاتصال...
+</p>
+
+</div>
+</div>
+
+
+<!-- LOBBY -->
+<div id="lobby" class="screen hidden">
+<div class="panel">
+
+<div class="logo" style="font-size:54px">
+UNO
+</div>
+
+<h2 style="text-align:center">
+غرفة اللعب
+</h2>
+
+<div
+id="roomCode"
+style="text-align:center;font-size:42px;font-weight:1000"
+></div>
+
+<p class="sub">
+أرسل الرمز لأصدقائك
+</p>
+
+<div id="players"></div>
+
+<button
+id="startBtn"
+class="btn primary"
+style="width:100%;margin-top:15px"
+onclick="startOnline()"
+>
+ابدأ اللعبة
+</button>
+
+<button
+class="btn secondary"
+style="width:100%;margin-top:10px"
+onclick="location.reload()"
+>
+خروج
+</button>
+
+</div>
+</div>
+
+
+<!-- GAME -->
+<div id="game" class="hidden">
+
+<div class="top">
+
+<div class="brand">
+UNO ONLINE
+</div>
+
+<div>
+
+<span class="pill">
+👤 <b id="me"></b>
+</span>
+
+<span class="pill">
+غرفة: <b id="codeTop"></b>
+</span>
+
+<button
+class="btn secondary"
+onclick="location.reload()"
+>
+خروج
+</button>
+
+</div>
+</div>
+
+
+<main class="table">
+
+<div id="board"></div>
+
+<div class="center">
+
+<div
+class="deck"
+onclick="drawCard()"
+>
+UNO
+</div>
+
+<div id="discard"></div>
+
+</div>
+
+<div id="turn" class="turn"></div>
+
+</main>
+
+
+<section class="handbox">
+
+<div id="hand" class="hand"></div>
+
+<div class="actions">
+
+<button
+class="btn secondary"
+onclick="drawCard()"
+>
+سحب ورقة
+</button>
+
+<button
+class="btn green"
+onclick="sayUno()"
+>
+UNO!
+</button>
+
+</div>
+
+<div id="status" class="note"></div>
+
+</section>
+
+</div>
+
+
+<!-- CHAT BUTTON -->
+<button
+id="chatToggle"
+class="chatToggle hidden"
+onclick="toggleChat()"
+aria-label="الدردشة"
+>
+💬
+<span id="chatBadge" class="chatBadge hidden">0</span>
+</button>
+
+
+<!-- CHAT -->
 <div id="chatPanel" class="chatPanel hidden">
 
-  <div class="chatHead">
+<div class="chatHead">
 
-    <span>
-      💬 دردشة الغرفة
-    </span>
+<span>
+💬 دردشة الغرفة
+</span>
 
-    <button
-      class="chatClose"
-      onclick="toggleChat()"
-    >
-      ×
-    </button>
-
-  </div>
-
-  <div id="chatMsgs" class="chatMsgs"></div>
-
-  <div class="chatComposer">
-
-    <div class="emojiRow">
-
-      <button class="emojiBtn" onclick="addEmoji('😀')">😀</button>
-      <button class="emojiBtn" onclick="addEmoji('😂')">😂</button>
-      <button class="emojiBtn" onclick="addEmoji('😍')">😍</button>
-      <button class="emojiBtn" onclick="addEmoji('🔥')">🔥</button>
-      <button class="emojiBtn" onclick="addEmoji('❤️')">❤️</button>
-      <button class="emojiBtn" onclick="addEmoji('👍')">👍</button>
-      <button class="emojiBtn" onclick="addEmoji('👎')">👎</button>
-      <button class="emojiBtn" onclick="addEmoji('🎉')">🎉</button>
-      <button class="emojiBtn" onclick="addEmoji('😎')">😎</button>
-      <button class="emojiBtn" onclick="addEmoji('🤖')">🤖</button>
-      <button class="emojiBtn" onclick="addEmoji('😱')">😱</button>
-      <button class="emojiBtn" onclick="addEmoji('👏')">👏</button>
-      <button class="emojiBtn" onclick="addEmoji('💯')">💯</button>
-      <button class="emojiBtn" onclick="addEmoji('🤣')">🤣</button>
-      <button class="emojiBtn" onclick="addEmoji('🙌')">🙌</button>
-
-    </div>
-
-    <div class="chatForm">
-
-      <input
-        id="chatInput"
-        class="chatInput"
-        maxlength="180"
-        placeholder="اكتب رسالة..."
-        onkeydown="if(event.key==='Enter')sendChat()"
-      >
-
-      <button
-        class="chatSend"
-        onclick="sendChat()"
-      >
-        إرسال
-      </button>
-
-    </div>
-
-  </div>
+<button
+class="chatClose"
+onclick="toggleChat()"
+>
+×
+</button>
 
 </div>
 
-<!-- اختيار اللون -->
+<div id="chatMsgs" class="chatMsgs"></div>
+
+<div class="chatComposer">
+
+<div class="emojiRow">
+
+<button class="emojiBtn" onclick="addEmoji('😀')">😀</button>
+<button class="emojiBtn" onclick="addEmoji('😂')">😂</button>
+<button class="emojiBtn" onclick="addEmoji('😍')">😍</button>
+<button class="emojiBtn" onclick="addEmoji('🔥')">🔥</button>
+<button class="emojiBtn" onclick="addEmoji('❤️')">❤️</button>
+<button class="emojiBtn" onclick="addEmoji('👍')">👍</button>
+<button class="emojiBtn" onclick="addEmoji('👎')">👎</button>
+<button class="emojiBtn" onclick="addEmoji('🎉')">🎉</button>
+<button class="emojiBtn" onclick="addEmoji('😎')">😎</button>
+<button class="emojiBtn" onclick="addEmoji('🤖')">🤖</button>
+<button class="emojiBtn" onclick="addEmoji('😱')">😱</button>
+<button class="emojiBtn" onclick="addEmoji('👏')">👏</button>
+<button class="emojiBtn" onclick="addEmoji('💯')">💯</button>
+<button class="emojiBtn" onclick="addEmoji('🤣')">🤣</button>
+<button class="emojiBtn" onclick="addEmoji('🙌')">🙌</button>
+
+</div>
+
+<div class="chatForm">
+
+<input
+id="chatInput"
+class="chatInput"
+maxlength="180"
+placeholder="اكتب رسالة..."
+onkeydown="if(event.key==='Enter')sendChat()"
+>
+
+<button
+class="chatSend"
+onclick="sendChat()"
+>
+إرسال
+</button>
+
+</div>
+</div>
+</div>
+
+
+<!-- COLOR -->
 <div id="colorModal" class="modal hidden">
 
-  <div class="modalbox">
+<div class="modalbox">
 
-    <h2>
-      اختر اللون
-    </h2>
+<h2>
+اختر اللون
+</h2>
 
-    <div class="colors">
+<div class="colors">
 
-      <button
-        class="cb"
-        style="background:#e92b35;color:#fff"
-        onclick="pickColor('red')"
-      >
-        أحمر
-      </button>
+<button
+class="cb"
+style="background:#e92b35;color:#fff"
+onclick="pickColor('red')"
+>
+أحمر
+</button>
 
-      <button
-        class="cb"
-        style="background:#f2c400"
-        onclick="pickColor('yellow')"
-      >
-        أصفر
-      </button>
+<button
+class="cb"
+style="background:#f2c400"
+onclick="pickColor('yellow')"
+>
+أصفر
+</button>
 
-      <button
-        class="cb"
-        style="background:#16a968;color:#fff"
-        onclick="pickColor('green')"
-      >
-        أخضر
-      </button>
+<button
+class="cb"
+style="background:#16a968;color:#fff"
+onclick="pickColor('green')"
+>
+أخضر
+</button>
 
-      <button
-        class="cb"
-        style="background:#287be0;color:#fff"
-        onclick="pickColor('blue')"
-      >
-        أزرق
-      </button>
-
-    </div>
-
-  </div>
+<button
+class="cb"
+style="background:#287be0;color:#fff"
+onclick="pickColor('blue')"
+>
+أزرق
+</button>
 
 </div>
+</div>
+</div>
 
-<!-- المطورين -->
+
+<!-- DEVELOPERS -->
 <div id="devModal" class="modal hidden">
 
-  <div class="modalbox">
+<div class="modalbox">
 
-    <h2 style="color:#ff29c8;font-size:30px">
-      المطورين
-    </h2>
+<h2 style="color:#ff29c8;font-size:30px">
+المطورين
+</h2>
 
-    <div class="devline"></div>
+<div class="devline"></div>
 
-    <div class="devnames">
-      <b>رشود القحطاني</b>
-      <br>
-      <span style="color:#58d6ff">◆</span>
-      <br>
-      <b>علي الحربي</b>
-    </div>
+<div class="devnames">
 
-    <div class="devline"></div>
+<b>رشود القحطاني</b>
 
-    <h3 style="color:#ff29c8">
-      حساب المطور
-    </h3>
+<br>
 
-    <!-- DPYT -->
-    <a
-      class="dpyt"
-      href="https://www.instagram.com/DPYT/"
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label="DPYT على Instagram"
-    >
-      <span class="dpytIcon">◎</span>
-      <span>DPYT</span>
-      <span style="color:#fff;margin-right:6px">
-        @DPYT
-      </span>
-    </a>
+<span style="color:#58d6ff">◆</span>
 
-    <button
-      class="btn secondary"
-      style="width:100%;margin-top:18px"
-      onclick="closeDev()"
-    >
-      إغلاق
-    </button>
+<br>
 
-  </div>
+<b>علي الحربي</b>
 
 </div>
+
+<div class="devline"></div>
+
+<h3 style="color:#ff29c8">
+حساب المطور
+</h3>
+
+<a
+class="dpyt"
+href="https://www.instagram.com/DPYT/"
+target="_blank"
+rel="noopener noreferrer"
+aria-label="DPYT على Instagram"
+>
+<span class="dpytIcon">◎</span>
+
+<span style="color:#ff2aa9">
+DPYT
+</span>
+
+<span style="color:#fff;margin-right:6px">
+8_q
+</span>
+
+</a>
+
+<button
+class="btn secondary"
+style="width:100%;margin-top:18px"
+onclick="closeDev()"
+>
+إغلاق
+</button>
+
+</div>
+</div>
+
 
 <div id="toast" class="toast"></div>
 
+
 <script>
-let ws = null;
-let online = false;
-let mode = "online";
-let me = "";
-let room = "";
 
-let bot = null;
+let ws=null;
+let online=false;
+let mode="online";
+let me="";
+let room="";
+let bot=null;
 
-const $ = id => document.getElementById(id);
+const $=id=>document.getElementById(id);
+const colors=["red","yellow","green","blue"];
 
-const colors = [
-  "red",
-  "yellow",
-  "green",
-  "blue"
-];
 
 function toast(text){
-  const t = $("toast");
 
-  t.textContent = text;
-  t.classList.add("show");
+$("toast").textContent=text;
+$("toast").classList.add("show");
 
-  clearTimeout(window.toastTimer);
+clearTimeout(window.toastTimer);
 
-  window.toastTimer = setTimeout(() => {
-    t.classList.remove("show");
-  },2200);
+window.toastTimer=setTimeout(()=>{
+$("toast").classList.remove("show");
+},2500);
+
 }
 
+
 function openDev(){
-  $("devModal").classList.remove("hidden");
+$("devModal").classList.remove("hidden");
 }
 
 function closeDev(){
-  $("devModal").classList.add("hidden");
+$("devModal").classList.add("hidden");
 }
 
-/* =========================
-   WebSocket
-========================= */
 
+/* اتصال السيرفر */
 function connect(){
 
-  let protocol =
-    location.protocol === "https:"
-      ? "wss:"
-      : "ws:";
+let protocol=location.protocol==="https:"?"wss:":"ws:";
 
-  ws = new WebSocket(
-    protocol + "//" + location.host
-  );
+let wsUrl=protocol+"//"+location.host;
 
-  ws.onopen = () => {
+try{
 
-    online = true;
+ws=new WebSocket(wsUrl);
 
-    $("conn").textContent =
-      "الاتصال: متصل ✓";
+}catch(e){
 
-    $("createBtn").disabled = false;
-    $("joinBtn").disabled = false;
+$("conn").textContent="الاتصال: فشل";
+return;
 
-  };
-
-  ws.onclose = () => {
-
-    online = false;
-
-    $("conn").textContent =
-      "الاتصال: انقطع ✕";
-
-    $("createBtn").disabled = true;
-    $("joinBtn").disabled = true;
-
-  };
-
-  ws.onerror = () => {
-
-    online = false;
-
-    $("conn").textContent =
-      "الاتصال: خطأ في WebSocket";
-
-  };
-
-  ws.onmessage = event => {
-
-    let message;
-
-    try{
-      message = JSON.parse(event.data);
-    }catch{
-      return;
-    }
-
-    if(message.type === "connected"){
-      online = true;
-
-      $("conn").textContent =
-        "الاتصال: متصل ✓";
-
-      $("createBtn").disabled = false;
-      $("joinBtn").disabled = false;
-
-      return;
-    }
-
-    if(message.type === "error"){
-      toast(message.message);
-      return;
-    }
-
-    if(message.type === "room"){
-      showLobby(message);
-      return;
-    }
-
-    if(message.type === "started"){
-      showGame();
-      renderOnline(message.state);
-      return;
-    }
-
-    if(message.type === "state"){
-      renderOnline(message.state);
-      return;
-    }
-
-    if(message.type === "chat"){
-      addChatMessage(message);
-    }
-
-  };
 }
 
-function send(type,data = {}){
 
-  if(!ws || ws.readyState !== WebSocket.OPEN){
+ws.onopen=()=>{
 
-    toast("الاتصال غير جاهز");
+online=true;
 
-    return;
-  }
+$("conn").textContent="الاتصال: متصل ✓";
 
-  ws.send(
-    JSON.stringify({
-      type,
-      ...data
-    })
-  );
+$("createBtn").disabled=false;
+$("joinBtn").disabled=false;
+
+};
+
+
+ws.onmessage=(event)=>{
+
+let message;
+
+try{
+message=JSON.parse(event.data);
+}catch(e){
+return;
 }
 
-/* =========================
-   إنشاء / دخول
-========================= */
+
+/* السيرفر الحالي يرسل connected */
+if(message.type==="connected"){
+
+online=true;
+
+$("conn").textContent="الاتصال: متصل ✓";
+
+$("createBtn").disabled=false;
+$("joinBtn").disabled=false;
+
+return;
+
+}
+
+
+if(message.type==="error"){
+
+toast(message.message||"حدث خطأ");
+
+return;
+
+}
+
+
+if(message.type==="room"){
+
+lobby(message);
+
+return;
+
+}
+
+
+if(message.type==="started"){
+
+showGame();
+
+renderOnline(message.state);
+
+return;
+
+}
+
+
+if(message.type==="state"){
+
+renderOnline(message.state);
+
+return;
+
+}
+
+
+if(message.type==="chat"){
+
+addChatMessage(message);
+
+return;
+
+}
+
+};
+
+
+ws.onclose=()=>{
+
+online=false;
+
+$("createBtn").disabled=true;
+$("joinBtn").disabled=true;
+
+$("conn").textContent="الاتصال: انقطع ✕";
+
+};
+
+
+ws.onerror=()=>{
+
+online=false;
+
+$("conn").textContent="الاتصال: خطأ";
+
+};
+
+}
+
+
+function send(type,data={}){
+
+if(!ws||ws.readyState!==WebSocket.OPEN){
+
+toast("الاتصال غير جاهز");
+
+return false;
+
+}
+
+ws.send(JSON.stringify({
+type,
+...data
+}));
+
+return true;
+
+}
+
+
+/* الغرفة */
 
 function createRoom(){
 
-  mode = "online";
+if(!online){
 
-  me =
-    $("name").value.trim() ||
-    "لاعب";
+toast("انتظر اتصال اللعبة");
 
-  send("create",{
-    name:me
-  });
+return;
 
 }
+
+mode="online";
+
+me=$("name").value.trim()||"لاعب";
+
+send("create",{
+name:me
+});
+
+}
+
 
 function joinRoom(){
 
-  mode = "online";
+if(!online){
 
-  me =
-    $("name").value.trim() ||
-    "لاعب";
+toast("انتظر اتصال اللعبة");
 
-  room =
-    $("room").value
-      .trim()
-      .toUpperCase();
-
-  if(!room){
-
-    toast("اكتب رمز الغرفة");
-
-    return;
-  }
-
-  send("join",{
-    name:me,
-    room
-  });
+return;
 
 }
 
-/* =========================
-   اللوبي
-========================= */
+mode="online";
 
-function showLobby(data){
+me=$("name").value.trim()||"لاعب";
 
-  room = data.room;
+room=$("room").value.trim().toUpperCase();
 
-  $("roomCode").textContent =
-    room;
+if(!room){
 
-  $("login").classList.add("hidden");
-  $("lobby").classList.remove("hidden");
+toast("اكتب رمز الغرفة");
 
-  const isHost =
-    data.host &&
-    data.host === getMyIdFromLobby(data);
-
-  $("startBtn").style.display =
-    data.host ? "block" : "block";
-
-  $("players").innerHTML =
-    data.players.map((player,index) => {
-
-      return `
-        <div
-          class="pill"
-          style="display:block;margin:7px 0"
-        >
-          🎮
-          ${escapeHTML(player.name)}
-          ${index === 0 ? " — المضيف" : ""}
-        </div>
-      `;
-
-    }).join("");
+return;
 
 }
 
-function getMyIdFromLobby(data){
+send("join",{
+name:me,
+room:room
+});
 
-  const currentName = me;
-
-  const player =
-    data.players.find(
-      p => p.name === currentName
-    );
-
-  return player ? player.id : null;
 }
+
+
+function lobby(data){
+
+room=data.room;
+
+$("roomCode").textContent=room;
+
+$("login").classList.add("hidden");
+$("lobby").classList.remove("hidden");
+
+let isHost=data.host===data.players[0]?.id;
+
+$("startBtn").style.display=isHost?"block":"none";
+
+$("players").innerHTML=data.players.map((player,index)=>`
+
+<div
+class="pill"
+style="display:block;margin:7px 0"
+>
+🎮 ${escapeHtml(player.name)}
+${index===0?" — المضيف":""}
+</div>
+
+`).join("");
+
+}
+
 
 function startOnline(){
 
-  send("start",{
-    room
-  });
+send("start",{
+room
+});
 
 }
+
 
 function showGame(){
 
-  $("login").classList.add("hidden");
-  $("lobby").classList.add("hidden");
-  $("game").classList.remove("hidden");
+$("login").classList.add("hidden");
+$("lobby").classList.add("hidden");
+$("game").classList.remove("hidden");
 
-  if(mode === "online"){
-    $("chatToggle").classList.remove("hidden");
-  }else{
-    $("chatToggle").classList.add("hidden");
-  }
+if(mode==="online"){
+
+$("chatToggle").classList.remove("hidden");
+
+}else{
+
+$("chatToggle").classList.add("hidden");
 
 }
 
-/* =========================
-   البطاقات
-========================= */
+}
+
+
+/* الكروت */
 
 function label(value){
 
-  const labels = {
-    skip:"⊘",
-    reverse:"↔",
-    draw2:"+2",
-    draw4:"+4",
-    wild:"★"
-  };
+return {
 
-  return labels[value] || value;
+skip:"⊘",
+reverse:"↔",
+draw2:"+2",
+draw4:"+4",
+wild:"★"
+
+}[value]||value;
+
 }
 
-function cardHTML(cardData,clickable=false){
 
-  let className;
+function cardHTML(c,click=false){
 
-  if(cardData.color === "wild"){
-    className = "wild";
-  }
-  else if(cardData.color === "green"){
-    className = "greenC";
-  }
-  else{
-    className = cardData.color;
-  }
+let cls=
+c.color==="wild"
+?"wild"
+:c.color==="green"
+?"greenC"
+:c.color;
 
-  return `
-    <div
-      class="card ${className} ${clickable ? "mycard" : ""}"
-      ${
-        clickable
-          ? `onclick="playCard(${cardData.id})"`
-          : ""
-      }
-    >
-      <span class="oval"></span>
-      <span class="v">
-        ${label(cardData.value)}
-      </span>
-    </div>
-  `;
+let onclick=click?
+`onclick="playCard(${c.id})"`:"";
+
+return `
+
+<div
+class="card ${cls} ${click?"mycard":""}"
+${onclick}
+>
+
+<span class="oval"></span>
+
+<span class="v">
+${label(c.value)}
+</span>
+
+</div>
+
+`;
+
 }
 
-/* =========================
-   Online render
-========================= */
+
+/* الحالة الأونلاين */
 
 function renderOnline(state){
 
-  if(!state || !state.players) return;
+let current=state.players.find(
+p=>p.id===state.me
+);
 
-  const myPlayer =
-    state.players.find(
-      p => p.id === state.me
-    );
+if(!current)return;
 
-  if(!myPlayer) return;
+$("me").textContent=current.name;
+$("codeTop").textContent=state.room;
 
-  $("me").textContent =
-    myPlayer.name;
+$("discard").innerHTML=cardHTML(state.discard);
 
-  me = myPlayer.name;
+$("hand").innerHTML=current.hand
+.map(c=>cardHTML(c,true))
+.join("");
 
-  $("codeTop").textContent =
-    state.room;
 
-  if(state.discard){
+let turnPlayer=state.players[state.turn];
 
-    $("discard").innerHTML =
-      cardHTML(state.discard);
+if(turnPlayer){
 
-  }
-
-  $("hand").innerHTML =
-    myPlayer.hand
-      .map(c => cardHTML(c,true))
-      .join("");
-
-  const currentPlayer =
-    state.players[state.turn];
-
-  if(currentPlayer){
-
-    $("turn").textContent =
-      currentPlayer.id === state.me
-        ? "دورك الآن"
-        : "دور " + currentPlayer.name;
-
-  }
-
-  $("status").textContent =
-    "اللون الحالي: " +
-    (state.color || state.discard?.color || "");
-
-  const positions = [
-    "p0",
-    "p1",
-    "p2",
-    "p3"
-  ];
-
-  $("board").innerHTML =
-    state.players
-      .map((player,index) => {
-
-        return `
-          <div
-            class="player
-            ${positions[index]}
-            ${index === state.turn ? "active" : ""}"
-          >
-            🎮
-            <b>
-              ${escapeHTML(player.name)}
-            </b>
-            <br>
-            <small>
-              ${player.hand.length} أوراق
-            </small>
-          </div>
-        `;
-
-      })
-      .join("");
-
-  if(
-    state.awaitColor &&
-    currentPlayer &&
-    currentPlayer.id === state.me
-  ){
-
-    $("colorModal")
-      .classList.remove("hidden");
-
-  }else{
-
-    $("colorModal")
-      .classList.add("hidden");
-
-  }
+$("turn").textContent=
+turnPlayer.id===state.me
+?"دورك الآن"
+:"دور "+turnPlayer.name;
 
 }
 
-/* =========================
-   اللعب Online
-========================= */
+
+$("status").textContent=
+"اللون الحالي: "+(state.color||state.discard.color);
+
+
+let positions=["p0","p1","p2","p3"];
+
+$("board").innerHTML=state.players
+.map((player,index)=>`
+
+<div
+class="player ${positions[index]||"p0"} ${index===state.turn?"active":""}"
+>
+
+🎮 <b>
+${escapeHtml(player.name)}
+</b>
+
+<br>
+
+<small>
+${player.hand.length} أوراق
+</small>
+
+</div>
+
+`)
+.join("");
+
+
+if(
+state.awaitColor &&
+turnPlayer &&
+turnPlayer.id===state.me
+){
+
+$("colorModal").classList.remove("hidden");
+
+}
+
+}
+
 
 function playCard(id){
 
-  if(mode === "bot"){
+if(mode==="bot"){
 
-    botPlayHuman(id);
+botPlayHuman(id);
 
-    return;
-  }
-
-  send("play",{
-    room,
-    id
-  });
+return;
 
 }
+
+send("play",{
+room,
+id
+});
+
+}
+
 
 function drawCard(){
 
-  if(mode === "bot"){
+if(mode==="bot"){
 
-    botDrawHuman();
+botDrawHuman();
 
-    return;
-  }
-
-  send("draw",{
-    room
-  });
+return;
 
 }
+
+send("draw",{
+room
+});
+
+}
+
 
 function sayUno(){
 
-  if(mode === "bot"){
+if(mode==="bot"){
 
-    if(
-      bot &&
-      bot.players[0].hand.length === 1
-    ){
-      toast("🔥 UNO!");
-    }
+if(bot && bot.players[0].hand.length===1){
 
-    return;
-  }
-
-  send("uno",{
-    room
-  });
+toast("🔥 UNO!");
 
 }
+
+return;
+
+}
+
+send("uno",{
+room
+});
+
+}
+
 
 function pickColor(color){
 
-  $("colorModal")
-    .classList.add("hidden");
+$("colorModal").classList.add("hidden");
 
-  if(mode === "bot"){
+if(mode==="bot"){
 
-    botColor(color);
+botColor(color);
 
-    return;
-  }
-
-  send("color",{
-    room,
-    color
-  });
+return;
 
 }
 
-/* =========================
-   الدردشة
-========================= */
+send("color",{
+room,
+color
+});
 
-let chatOpen = false;
-let chatUnread = 0;
+}
+
+
+/* الدردشة */
+
+let chatOpen=false;
+let chatUnread=0;
+
 
 function toggleChat(){
 
-  chatOpen = !chatOpen;
+chatOpen=!chatOpen;
 
-  $("chatPanel")
-    .classList.toggle(
-      "hidden",
-      !chatOpen
-    );
+$("chatPanel").classList.toggle(
+"hidden",
+!chatOpen
+);
 
-  if(chatOpen){
+if(chatOpen){
 
-    chatUnread = 0;
+chatUnread=0;
 
-    $("chatBadge")
-      .classList.add("hidden");
+$("chatBadge").classList.add("hidden");
 
-    setTimeout(() => {
-
-      $("chatInput")?.focus();
-
-    },50);
-
-  }
+setTimeout(()=>{
+$("chatInput").focus();
+},50);
 
 }
+
+}
+
 
 function addEmoji(emoji){
 
-  const input =
-    $("chatInput");
+$("chatInput").value+=emoji;
 
-  input.value += emoji;
-
-  input.focus();
+$("chatInput").focus();
 
 }
 
-function escapeHTML(text){
 
-  return String(text)
-    .replace(/[&<>'"]/g,char => {
+function escapeHtml(value){
 
-      const map = {
-        "&":"&amp;",
-        "<":"&lt;",
-        ">":"&gt;",
-        "'":"&#39;",
-        '"':"&quot;"
-      };
+return String(value).replace(
+/[&<>'"]/g,
+char=>({
 
-      return map[char];
+"&":"&amp;",
+"<":"&lt;",
+">":"&gt;",
+"'":"&#39;",
+'"':"&quot;"
 
-    });
+}[char])
+);
 
 }
+
 
 function addChatMessage(message){
 
-  const box =
-    $("chatMsgs");
+let box=$("chatMsgs");
 
-  if(!box) return;
+let div=document.createElement("div");
 
-  const mine =
-    message.name === me;
+let mine=message.name===me;
 
-  const div =
-    document.createElement("div");
+div.className="chatMsg "+(mine?"mine":"");
 
-  div.className =
-    "chatMsg " +
-    (mine ? "mine" : "");
+div.innerHTML=`
 
-  div.innerHTML = `
-    <div class="chatName">
-      ${escapeHTML(message.name)}
-    </div>
+<div class="chatName">
+${escapeHtml(message.name)}
+</div>
 
-    <div>
-      ${escapeHTML(message.text)}
-    </div>
-  `;
+<div>
+${escapeHtml(message.text)}
+</div>
 
-  box.appendChild(div);
+`;
 
-  box.scrollTop =
-    box.scrollHeight;
+box.appendChild(div);
 
-  if(!chatOpen && !mine){
+box.scrollTop=box.scrollHeight;
 
-    chatUnread++;
 
-    $("chatBadge").textContent =
-      chatUnread;
+if(!chatOpen&&!mine){
 
-    $("chatBadge")
-      .classList.remove("hidden");
+chatUnread++;
 
-  }
+$("chatBadge").textContent=chatUnread;
+
+$("chatBadge").classList.remove("hidden");
 
 }
+
+}
+
 
 function sendChat(){
 
-  if(mode !== "online"){
+if(mode!=="online"){
 
-    toast(
-      "الدردشة متاحة داخل اللعب الأونلاين"
-    );
+toast("الدردشة متاحة داخل اللعب الأونلاين");
 
-    return;
-  }
-
-  const input =
-    $("chatInput");
-
-  const text =
-    input.value.trim();
-
-  if(!text) return;
-
-  send("chat",{
-    room,
-    text
-  });
-
-  input.value = "";
+return;
 
 }
+
+let input=$("chatInput");
+
+let text=input.value.trim();
+
+if(!text)return;
+
+send("chat",{
+room,
+text
+});
+
+input.value="";
+
+}
+
 
 /* =========================
-   BOT
+   BOT GAME
 ========================= */
 
-function makeBotDeck(){
+function makeDeck(){
 
-  const deck = [];
+let deck=[];
+let id=1;
 
-  let id = 1;
+function add(color,value){
 
-  function add(color,value){
+deck.push({
+id:id++,
+color,
+value
+});
 
-    deck.push({
-      id:id++,
-      color,
-      value
-    });
-
-  }
-
-  for(const color of colors){
-
-    add(color,"0");
-
-    for(let n=1;n<=9;n++){
-
-      add(color,String(n));
-      add(color,String(n));
-
-    }
-
-    for(
-      const special of
-      ["skip","reverse","draw2"]
-    ){
-
-      add(color,special);
-      add(color,special);
-
-    }
-
-  }
-
-  for(let i=0;i<4;i++){
-
-    add("wild","wild");
-    add("wild","draw4");
-
-  }
-
-  return deck;
 }
+
+colors.forEach(color=>{
+
+add(color,"0");
+
+for(let n=1;n<=9;n++){
+
+add(color,String(n));
+add(color,String(n));
+
+}
+
+["skip","reverse","draw2"].forEach(special=>{
+
+add(color,special);
+add(color,special);
+
+});
+
+});
+
+
+for(let i=0;i<4;i++){
+
+add("wild","wild");
+add("wild","draw4");
+
+}
+
+return deck;
+
+}
+
 
 function shuffle(deck){
 
-  for(
-    let i=deck.length-1;
-    i>0;
-    i--
-  ){
+for(
+let i=deck.length-1;
+i>0;
+i--
+){
 
-    const j =
-      Math.floor(
-        Math.random()*(i+1)
-      );
+let j=Math.floor(
+Math.random()*(i+1)
+);
 
-    [
-      deck[i],
-      deck[j]
-    ] = [
-      deck[j],
-      deck[i]
-    ];
-
-  }
+[deck[i],deck[j]]=
+[deck[j],deck[i]];
 
 }
+
+}
+
 
 function startBot(){
 
-  mode = "bot";
+mode="bot";
 
-  const deck =
-    makeBotDeck();
+let deck=makeDeck();
 
-  shuffle(deck);
+shuffle(deck);
 
-  bot = {
+bot={
 
-    players:[
-      {
-        name:
-          $("name").value.trim() ||
-          "راشد",
-        hand:[]
-      },
-      {
-        name:"بوت 1",
-        hand:[]
-      },
-      {
-        name:"بوت 2",
-        hand:[]
-      },
-      {
-        name:"بوت 3",
-        hand:[]
-      }
-    ],
+players:[
 
-    deck,
-    used:[],
-    discard:null,
-    color:null,
-    turn:0,
-    direction:1,
-    over:false
+{
+name:$("name").value.trim()||"راشد",
+hand:[]
+},
 
-  };
+{
+name:"بوت 1",
+hand:[]
+},
 
-  for(let i=0;i<7;i++){
+{
+name:"بوت 2",
+hand:[]
+},
 
-    bot.players.forEach(
-      player => {
+{
+name:"بوت 3",
+hand:[]
+}
 
-        player.hand.push(
-          bot.deck.pop()
-        );
+],
 
-      }
-    );
+deck,
+used:[],
+discard:null,
+color:null,
+turn:0,
+direction:1,
+over:false
 
-  }
+};
 
-  do{
 
-    bot.discard =
-      bot.deck.pop();
+for(let i=0;i<7;i++){
 
-  }while(
-    bot.discard.color === "wild"
-  );
+bot.players.forEach(player=>{
 
-  bot.color =
-    bot.discard.color;
+player.hand.push(
+bot.deck.pop()
+);
 
-  showGame();
-
-  $("codeTop").textContent =
-    "BOT";
-
-  renderBot();
-
-  toast(
-    "🤖 بدأت مباراة ضد 3 بوتات"
-  );
+});
 
 }
+
+
+do{
+
+bot.discard=bot.deck.pop();
+
+}while(
+bot.discard.color==="wild"
+);
+
+
+bot.color=bot.discard.color;
+
+showGame();
+
+renderBot();
+
+toast("🤖 بدأت مباراة ضد 3 بوتات");
+
+}
+
 
 function refillBot(){
 
-  if(
-    !bot.deck.length &&
-    bot.used.length
-  ){
+if(
+!bot.deck.length &&
+bot.used.length
+){
 
-    bot.deck =
-      bot.used;
+bot.deck=bot.used;
 
-    bot.used = [];
+bot.used=[];
 
-    shuffle(bot.deck);
-
-  }
+shuffle(bot.deck);
 
 }
+
+}
+
 
 function botDraw(player,amount=1){
 
-  for(
-    let i=0;
-    i<amount;
-    i++
-  ){
+for(let i=0;i<amount;i++){
 
-    refillBot();
+refillBot();
 
-    if(bot.deck.length){
+if(bot.deck.length){
 
-      player.hand.push(
-        bot.deck.pop()
-      );
-
-    }
-
-  }
+player.hand.push(
+bot.deck.pop()
+);
 
 }
+
+}
+
+}
+
 
 function validBot(card){
 
-  return (
-    card.color === "wild" ||
-    card.color === bot.color ||
-    card.color === bot.discard.color ||
-    card.value === bot.discard.value
-  );
+return(
+card.color==="wild"||
+card.color===bot.color||
+card.color===bot.discard.color||
+card.value===bot.discard.value
+);
 
 }
+
 
 function nextBot(){
 
-  bot.turn =
-    (
-      bot.turn +
-      bot.direction +
-      4
-    ) % 4;
+bot.turn=
+(
+bot.turn+
+bot.direction+
+4
+)%4;
 
 }
+
 
 function botEffects(card){
 
-  if(card.value === "reverse"){
+if(card.value==="reverse"){
 
-    bot.direction *= -1;
-
-  }
-
-  if(card.value === "skip"){
-
-    nextBot();
-
-  }
-
-  if(
-    card.value === "draw2"
-  ){
-
-    const index =
-      (
-        bot.turn +
-        bot.direction +
-        4
-      ) % 4;
-
-    botDraw(
-      bot.players[index],
-      2
-    );
-
-    nextBot();
-
-  }
+bot.direction*=-1;
 
 }
+
+if(card.value==="skip"){
+
+nextBot();
+
+}
+
+if(card.value==="draw2"){
+
+let index=
+(
+bot.turn+
+bot.direction+
+4
+)%4;
+
+botDraw(
+bot.players[index],
+2
+);
+
+nextBot();
+
+}
+
+if(card.value==="draw4"){
+
+let index=
+(
+bot.turn+
+bot.direction+
+4
+)%4;
+
+botDraw(
+bot.players[index],
+4
+);
+
+nextBot();
+
+}
+
+}
+
 
 function botPlay(player,card){
 
-  const index =
-    player.hand.indexOf(card);
+let index=player.hand.indexOf(card);
 
-  if(
-    index < 0 ||
-    !validBot(card)
-  ){
+if(index<0)return false;
 
-    return false;
-  }
+if(!validBot(card))return false;
 
-  player.hand.splice(
-    index,
-    1
-  );
+player.hand.splice(index,1);
 
-  bot.used.push(
-    bot.discard
-  );
+bot.used.push(bot.discard);
 
-  bot.discard =
-    card;
+bot.discard=card;
 
-  bot.color =
-    card.color === "wild"
-      ? null
-      : card.color;
+if(card.color==="wild"){
 
-  if(player.hand.length === 0){
+bot.color=null;
 
-    bot.over = true;
+}else{
 
-    renderBot();
-
-    toast(
-      "🏆 " +
-      player.name +
-      " فاز!"
-    );
-
-    return true;
-
-  }
-
-  if(card.color === "wild"){
-
-    bot.color =
-      colors[
-        Math.floor(
-          Math.random()*4
-        )
-      ];
-
-    botEffects(card);
-
-    nextBot();
-
-  }else{
-
-    botEffects(card);
-
-    nextBot();
-
-  }
-
-  renderBot();
-
-  return true;
+bot.color=card.color;
 
 }
+
+
+if(player.hand.length===0){
+
+bot.over=true;
+
+renderBot();
+
+toast("🏆 "+player.name+" فاز!");
+
+return true;
+
+}
+
+
+if(card.color==="wild"){
+
+return true;
+
+}
+
+
+botEffects(card);
+
+nextBot();
+
+renderBot();
+
+return true;
+
+}
+
 
 function botPlayHuman(id){
 
-  if(
-    bot.over ||
-    bot.turn !== 0
-  ) return;
+if(bot.over||bot.turn!==0)return;
 
-  const player =
-    bot.players[0];
+let player=bot.players[0];
 
-  const card =
-    player.hand.find(
-      c => c.id === id
-    );
+let card=player.hand.find(
+c=>c.id===id
+);
 
-  if(!card) return;
+if(!card)return;
 
-  if(!validBot(card)){
+if(!validBot(card)){
 
-    toast(
-      "هذه الورقة غير صالحة الآن"
-    );
+toast("هذه الورقة غير صالحة الآن");
 
-    return;
-
-  }
-
-  botPlay(
-    player,
-    card
-  );
-
-  if(
-    !bot.over &&
-    bot.turn !== 0
-  ){
-
-    botTurn();
-
-  }
+return;
 
 }
+
+let wasWild=card.color==="wild";
+
+botPlay(player,card);
+
+if(bot.over)return;
+
+if(wasWild){
+
+$("colorModal").classList.remove("hidden");
+
+return;
+
+}
+
+if(bot.turn!==0){
+
+botTurn();
+
+}
+
+}
+
 
 function botDrawHuman(){
 
-  if(
-    bot.over ||
-    bot.turn !== 0
-  ) return;
+if(bot.over||bot.turn!==0)return;
 
-  botDraw(
-    bot.players[0]
-  );
+botDraw(bot.players[0]);
 
-  nextBot();
+nextBot();
 
-  renderBot();
+renderBot();
 
-  botTurn();
+botTurn();
 
 }
+
 
 function botColor(color){
 
-  if(
-    bot.over ||
-    bot.turn !== 0
-  ) return;
+if(bot.over||bot.turn!==0)return;
 
-  bot.color = color;
+bot.color=color;
 
-  botEffects(
-    bot.discard
-  );
+botEffects(bot.discard);
 
-  nextBot();
+nextBot();
 
-  renderBot();
+renderBot();
 
-  botTurn();
+if(bot.turn!==0){
+
+botTurn();
 
 }
+
+}
+
 
 function botTurn(){
 
-  if(
-    bot.over ||
-    bot.turn === 0
-  ) return;
+if(bot.over||bot.turn===0)return;
 
-  setTimeout(() => {
+setTimeout(()=>{
 
-    if(bot.over) return;
+if(bot.over)return;
 
-    const player =
-      bot.players[bot.turn];
+let player=bot.players[bot.turn];
 
-    const validCards =
-      player.hand.filter(
-        validBot
-      );
+let validCards=
+player.hand.filter(validBot);
 
-    if(!validCards.length){
 
-      botDraw(player);
+if(!validCards.length){
 
-      nextBot();
+botDraw(player);
 
-      renderBot();
+nextBot();
 
-      return botTurn();
+renderBot();
 
-    }
-
-    const card =
-      validCards[
-        Math.floor(
-          Math.random() *
-          validCards.length
-        )
-      ];
-
-    botPlay(
-      player,
-      card
-    );
-
-    if(
-      !bot.over &&
-      bot.turn !== 0
-    ){
-
-      botTurn();
-
-    }
-
-  },650);
+return botTurn();
 
 }
+
+
+let card=
+validCards[
+Math.floor(
+Math.random()*validCards.length
+)
+];
+
+
+let wild=card.color==="wild";
+
+botPlay(player,card);
+
+if(bot.over)return;
+
+
+if(wild){
+
+let chosen=
+colors[
+Math.floor(
+Math.random()*colors.length
+)
+];
+
+bot.color=chosen;
+
+botEffects(card);
+
+nextBot();
+
+renderBot();
+
+}
+
+
+if(bot.turn!==0){
+
+botTurn();
+
+}
+
+},650);
+
+}
+
 
 function renderBot(){
 
-  if(!bot) return;
+let player=bot.players[0];
 
-  const player =
-    bot.players[0];
+$("me").textContent=player.name;
 
-  $("me").textContent =
-    player.name;
+$("codeTop").textContent="BOT";
 
-  $("discard").innerHTML =
-    cardHTML(
-      bot.discard
-    );
+$("discard").innerHTML=
+cardHTML(bot.discard);
 
-  $("hand").innerHTML =
-    player.hand
-      .map(
-        c => cardHTML(c,true)
-      )
-      .join("");
+$("hand").innerHTML=
+player.hand
+.map(c=>cardHTML(c,true))
+.join("");
 
-  $("turn").textContent =
-    bot.over
-      ? "انتهت المباراة"
-      : bot.turn === 0
-        ? "دورك الآن"
-        : "دور " +
-          bot.players[bot.turn].name;
 
-  $("status").textContent =
-    "اللون الحالي: " +
-    bot.color +
-    " — 🤖 ضد 3 بوتات";
+if(bot.over){
 
-  const positions = [
-    "p0",
-    "p1",
-    "p2",
-    "p3"
-  ];
+$("turn").textContent="انتهت المباراة";
 
-  $("board").innerHTML =
-    bot.players
-      .map((player,index) => {
+}else if(bot.turn===0){
 
-        return `
-          <div
-            class="player
-            ${positions[index]}
-            ${index === bot.turn ? "active" : ""}"
-          >
+$("turn").textContent="دورك الآن";
 
-            ${index ? "🤖" : "👤"}
+}else{
 
-            <b>
-              ${escapeHTML(player.name)}
-            </b>
-
-            <br>
-
-            <small>
-              ${player.hand.length} أوراق
-            </small>
-
-          </div>
-        `;
-
-      })
-      .join("");
+$("turn").textContent=
+"دور "+bot.players[bot.turn].name;
 
 }
 
-/* تشغيل الاتصال */
+
+$("status").textContent=
+"اللون الحالي: "+bot.color+
+" — 🤖 ضد 3 بوتات";
+
+
+let positions=["p0","p1","p2","p3"];
+
+$("board").innerHTML=
+bot.players.map((player,index)=>`
+
+<div
+class="player ${positions[index]} ${index===bot.turn?"active":""}"
+>
+
+${index?"🤖":"👤"}
+
+<b>
+${escapeHtml(player.name)}
+</b>
+
+<br>
+
+<small>
+${player.hand.length} أوراق
+</small>
+
+</div>
+
+`).join("");
+
+}
+
+
+/* بدء الاتصال */
+$("createBtn").disabled=true;
+$("joinBtn").disabled=true;
+
 connect();
 
 </script>
