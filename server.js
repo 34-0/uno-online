@@ -4,29 +4,28 @@ const path = require("path");
 const crypto = require("crypto");
 const WebSocket = require("ws");
 
-const PORT = Number(process.env.PORT) || 10000;
+const PORT = process.env.PORT || 10000;
 
 const server = http.createServer((req, res) => {
-  let urlPath = (req.url || "/").split("?")[0];
+  let url = (req.url || "/").split("?")[0];
 
-  if (urlPath === "/") {
-    urlPath = "/index.html";
-  }
+  if (url === "/") url = "/index.html";
 
-  // منع الخروج من مجلد المشروع
-  const safePath = path.normalize(urlPath).replace(/^(\.\.[/\\])+/, "");
-  const filePath = path.join(__dirname, safePath);
+  // السماح فقط بالملفات الموجودة داخل مجلد المشروع
+  const filePath = path.join(__dirname, url);
 
   if (!fs.existsSync(filePath) || !fs.statSync(filePath).isFile()) {
-    res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
-    return res.end("Not found");
+    res.writeHead(404, {
+      "Content-Type": "text/plain; charset=utf-8"
+    });
+    return res.end("Not Found");
   }
 
   const ext = path.extname(filePath).toLowerCase();
 
-  const types = {
+  const mime = {
     ".html": "text/html; charset=utf-8",
-    ".js": "text/javascript; charset=utf-8",
+    ".js": "application/javascript; charset=utf-8",
     ".css": "text/css; charset=utf-8",
     ".json": "application/json; charset=utf-8",
     ".png": "image/png",
@@ -37,7 +36,7 @@ const server = http.createServer((req, res) => {
   };
 
   res.writeHead(200, {
-    "Content-Type": types[ext] || "application/octet-stream"
+    "Content-Type": mime[ext] || "application/octet-stream"
   });
 
   res.end(fs.readFileSync(filePath));
@@ -53,13 +52,9 @@ function makeDeck() {
   const deck = [];
   let id = 1;
 
-  function add(color, value) {
-    deck.push({
-      id: id++,
-      color,
-      value
-    });
-  }
+  const add = (color, value) => {
+    deck.push({ id: id++, color, value });
+  };
 
   for (const color of COLORS) {
     add(color, "0");
@@ -83,10 +78,10 @@ function makeDeck() {
   return deck;
 }
 
-function shuffle(array) {
-  for (let i = array.length - 1; i > 0; i--) {
+function shuffle(deck) {
+  for (let i = deck.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
+    [deck[i], deck[j]] = [deck[j], deck[i]];
   }
 }
 
@@ -101,31 +96,27 @@ function send(player, data) {
 }
 
 function broadcast(room, data) {
-  if (!room) return;
-
-  for (const player of room.players) {
-    send(player, data);
-  }
+  room.players.forEach(player => send(player, data));
 }
 
-function makeRoomCode() {
+function createCode() {
   let code;
 
   do {
     code = Math.random()
       .toString(36)
-      .slice(2, 6)
+      .substring(2, 6)
       .toUpperCase();
   } while (rooms.has(code));
 
   return code;
 }
 
-function lobby(room) {
+function roomInfo(room) {
   return {
     type: "room",
     room: room.code,
-    host: room.players[0] ? room.players[0].id : null,
+    host: room.players[0]?.id || null,
     players: room.players.map(player => ({
       id: player.id,
       name: player.name
@@ -134,9 +125,9 @@ function lobby(room) {
 }
 
 function broadcastLobby(room) {
-  for (const player of room.players) {
-    send(player, lobby(room));
-  }
+  room.players.forEach(player => {
+    send(player, roomInfo(room));
+  });
 }
 
 function publicState(room, me) {
@@ -156,13 +147,13 @@ function publicState(room, me) {
   };
 }
 
-function pushState(room) {
-  for (const player of room.players) {
+function update(room) {
+  room.players.forEach(player => {
     send(player, {
       type: "state",
       state: publicState(room, player)
     });
-  }
+  });
 }
 
 function refill(room) {
@@ -173,17 +164,17 @@ function refill(room) {
   }
 }
 
-function drawCards(room, player, count = 1) {
-  for (let i = 0; i < count; i++) {
+function draw(room, player, amount = 1) {
+  for (let i = 0; i < amount; i++) {
     refill(room);
 
-    if (room.deck.length > 0) {
+    if (room.deck.length) {
       player.hand.push(room.deck.pop());
     }
   }
 }
 
-function nextTurn(room) {
+function next(room) {
   if (!room.players.length) return;
 
   room.turn =
@@ -191,7 +182,7 @@ function nextTurn(room) {
     room.players.length;
 }
 
-function canPlay(card, room) {
+function valid(card, room) {
   if (!room.discard) return true;
 
   return (
@@ -202,52 +193,52 @@ function canPlay(card, room) {
   );
 }
 
-function applyCardEffect(room, card) {
+function effects(room, card) {
   if (card.value === "reverse") {
     room.direction *= -1;
   }
 
   if (card.value === "skip") {
-    nextTurn(room);
+    next(room);
   }
 
   if (card.value === "draw2") {
-    const targetIndex =
+    const index =
       (room.turn +
         room.direction +
         room.players.length) %
       room.players.length;
 
-    drawCards(room, room.players[targetIndex], 2);
-    nextTurn(room);
+    draw(room, room.players[index], 2);
+    next(room);
   }
 
   if (card.value === "draw4") {
-    const targetIndex =
+    const index =
       (room.turn +
         room.direction +
         room.players.length) %
       room.players.length;
 
-    drawCards(room, room.players[targetIndex], 4);
-    nextTurn(room);
+    draw(room, room.players[index], 4);
+    next(room);
   }
 }
 
-function playCard(room, player, cardId) {
+function play(room, player, id) {
   if (!room.started) return;
   if (room.players[room.turn] !== player) return;
   if (room.awaitColor) return;
 
   const index = player.hand.findIndex(
-    card => String(card.id) === String(cardId)
+    card => String(card.id) === String(id)
   );
 
   if (index === -1) return;
 
   const card = player.hand[index];
 
-  if (!canPlay(card, room)) {
+  if (!valid(card, room)) {
     return send(player, {
       type: "error",
       message: "هذه الورقة غير صالحة الآن"
@@ -277,16 +268,16 @@ function playCard(room, player, cardId) {
     });
 
     room.started = false;
-    pushState(room);
+    update(room);
     return;
   }
 
   if (!room.awaitColor) {
-    applyCardEffect(room, card);
-    nextTurn(room);
+    effects(room, card);
+    next(room);
   }
 
-  pushState(room);
+  update(room);
 }
 
 function startGame(room) {
@@ -298,44 +289,39 @@ function startGame(room) {
   room.direction = 1;
   room.color = null;
   room.awaitColor = false;
-  room.started = true;
 
-  for (const player of room.players) {
+  room.players.forEach(player => {
     player.hand = [];
-  }
+  });
 
-  // توزيع 7 أوراق لكل لاعب
   for (let i = 0; i < 7; i++) {
-    for (const player of room.players) {
-      drawCards(room, player, 1);
-    }
+    room.players.forEach(player => {
+      draw(room, player);
+    });
   }
 
-  // أول ورقة يجب ألا تكون Wild
   do {
     room.discard = room.deck.pop();
-  } while (
-    room.discard &&
-    room.discard.color === "wild"
-  );
+  } while (room.discard.color === "wild");
 
   room.color = room.discard.color;
+  room.started = true;
 
-  for (const player of room.players) {
+  room.players.forEach(player => {
     send(player, {
       type: "started",
       state: publicState(room, player)
     });
-  }
+  });
 }
 
 wss.on("connection", ws => {
   let player = null;
   let room = null;
 
-  send(player, {
+  ws.send(JSON.stringify({
     type: "connected"
-  });
+  }));
 
   ws.on("message", raw => {
     let message;
@@ -346,16 +332,14 @@ wss.on("connection", ws => {
       return;
     }
 
-    /*
-      إنشاء غرفة
-    */
+    // إنشاء غرفة
     if (message.type === "create") {
       if (player) return;
 
-      const roomCode = makeRoomCode();
+      const code = createCode();
 
       room = {
-        code: roomCode,
+        code,
         players: [],
         deck: [],
         used: [],
@@ -377,43 +361,39 @@ wss.on("connection", ws => {
       };
 
       room.players.push(player);
-      rooms.set(roomCode, room);
+      rooms.set(code, room);
 
-      send(player, lobby(room));
+      send(player, roomInfo(room));
       return;
     }
 
-    /*
-      الانضمام لغرفة
-    */
+    // الانضمام
     if (message.type === "join") {
-      const roomCode = String(
-        message.room || ""
-      )
+      const code = String(message.room || "")
         .trim()
         .toUpperCase();
 
-      room = rooms.get(roomCode);
+      room = rooms.get(code);
 
       if (!room) {
-        return send(wsPlayer(ws), {
+        return ws.send(JSON.stringify({
           type: "error",
           message: "الغرفة غير موجودة"
-        });
+        }));
       }
 
       if (room.started) {
-        return send(wsPlayer(ws), {
+        return ws.send(JSON.stringify({
           type: "error",
           message: "اللعبة بدأت بالفعل"
-        });
+        }));
       }
 
       if (room.players.length >= 4) {
-        return send(wsPlayer(ws), {
+        return ws.send(JSON.stringify({
           type: "error",
           message: "الغرفة ممتلئة"
-        });
+        }));
       }
 
       player = {
@@ -432,15 +412,13 @@ wss.on("connection", ws => {
     }
 
     if (!player || !room) {
-      return send(wsPlayer(ws), {
+      return ws.send(JSON.stringify({
         type: "error",
-        message: "أنشئ غرفة أو انضم إلى غرفة أولًا"
-      });
+        message: "أنشئ غرفة أو انضم لغرفة أولًا"
+      }));
     }
 
-    /*
-      بدء اللعبة
-    */
+    // بدء اللعبة
     if (message.type === "start") {
       if (room.players[0] !== player) {
         return send(player, {
@@ -449,84 +427,59 @@ wss.on("connection", ws => {
         });
       }
 
-      if (room.players.length < 1) {
-        return;
-      }
-
       startGame(room);
       return;
     }
 
-    /*
-      لعب ورقة
-    */
+    // لعب ورقة
     if (message.type === "play") {
-      playCard(room, player, message.id);
+      play(room, player, message.id);
       return;
     }
 
-    /*
-      سحب ورقة
-    */
+    // سحب
     if (message.type === "draw") {
       if (!room.started) return;
       if (room.players[room.turn] !== player) return;
       if (room.awaitColor) return;
 
-      drawCards(room, player, 1);
-
-      nextTurn(room);
-      pushState(room);
+      draw(room, player);
+      next(room);
+      update(room);
       return;
     }
 
-    /*
-      اختيار اللون
-    */
+    // اختيار اللون
     if (message.type === "color") {
       if (!room.started) return;
       if (room.players[room.turn] !== player) return;
       if (!room.awaitColor) return;
 
-      const color = String(message.color || "");
+      if (!COLORS.includes(message.color)) return;
 
-      if (!COLORS.includes(color)) {
-        return;
-      }
-
-      room.color = color;
+      room.color = message.color;
       room.awaitColor = false;
 
-      applyCardEffect(room, room.discard);
-      nextTurn(room);
+      effects(room, room.discard);
+      next(room);
 
-      pushState(room);
+      update(room);
       return;
     }
 
-    /*
-      UNO
-    */
+    // UNO
     if (message.type === "uno") {
-      if (
-        room.started &&
-        player.hand.length === 1
-      ) {
+      if (room.started && player.hand.length === 1) {
         broadcast(room, {
           type: "error",
-          message:
-            "🔥 " +
-            player.name +
-            " قال UNO!"
+          message: "🔥 " + player.name + " قال UNO!"
         });
       }
 
       return;
     }
 
-    /*
-      الدردشة
-    */
+    // الدردشة
     if (message.type === "chat") {
       if (!room.started) return;
 
@@ -541,19 +494,15 @@ wss.on("connection", ws => {
         name: player.name,
         text
       });
-
-      return;
     }
   });
 
   ws.on("close", () => {
     if (!player || !room) return;
 
-    const index = room.players.indexOf(player);
-
-    if (index !== -1) {
-      room.players.splice(index, 1);
-    }
+    room.players = room.players.filter(
+      p => p !== player
+    );
 
     if (room.players.length === 0) {
       rooms.delete(room.code);
@@ -564,14 +513,12 @@ wss.on("connection", ws => {
       room.turn = 0;
     }
 
-    // إذا خرج اللاعب أثناء اللعب
     if (room.started) {
       room.started = false;
 
       broadcast(room, {
         type: "error",
-        message:
-          "⚠️ خرج أحد اللاعبين، وتم إيقاف المباراة."
+        message: "⚠️ خرج أحد اللاعبين وتم إيقاف المباراة."
       });
     }
 
@@ -579,17 +526,6 @@ wss.on("connection", ws => {
   });
 });
 
-/*
-  تحويل WebSocket إلى شكل player للإخطاء
-*/
-function wsPlayer(ws) {
-  return {
-    ws
-  };
-}
-
 server.listen(PORT, "0.0.0.0", () => {
-  console.log(
-    "UNO Online server running on port " + PORT
-  );
+  console.log("UNO Online running on port " + PORT);
 });
