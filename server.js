@@ -4,15 +4,22 @@ const path = require("path");
 const crypto = require("crypto");
 const WebSocket = require("ws");
 
-const PORT = process.env.PORT || 10000;
+const PORT = Number(process.env.PORT) || 10000;
 
 const server = http.createServer((req, res) => {
   let url = (req.url || "/").split("?")[0];
 
-  if (url === "/") url = "/index.html";
+  if (url === "/") {
+    url = "/index.html";
+  }
 
-  // السماح فقط بالملفات الموجودة داخل مجلد المشروع
-  const filePath = path.join(__dirname, url);
+  // منع المسارات غير الآمنة
+  const filePath = path.resolve(__dirname, "." + url);
+
+  if (!filePath.startsWith(path.resolve(__dirname))) {
+    res.writeHead(403);
+    return res.end("Forbidden");
+  }
 
   if (!fs.existsSync(filePath) || !fs.statSync(filePath).isFile()) {
     res.writeHead(404, {
@@ -36,13 +43,18 @@ const server = http.createServer((req, res) => {
   };
 
   res.writeHead(200, {
-    "Content-Type": mime[ext] || "application/octet-stream"
+    "Content-Type": mime[ext] || "application/octet-stream",
+    "Cache-Control": "no-cache"
   });
 
-  res.end(fs.readFileSync(filePath));
+  fs.createReadStream(filePath).pipe(res);
 });
 
-const wss = new WebSocket.Server({ server });
+const wss = new WebSocket.Server({
+  server,
+  perMessageDeflate: false
+});
+
 const rooms = new Map();
 
 const COLORS = ["red", "yellow", "green", "blue"];
@@ -53,7 +65,11 @@ function makeDeck() {
   let id = 1;
 
   const add = (color, value) => {
-    deck.push({ id: id++, color, value });
+    deck.push({
+      id: id++,
+      color,
+      value
+    });
   };
 
   for (const color of COLORS) {
@@ -91,12 +107,20 @@ function send(player, data) {
     player.ws &&
     player.ws.readyState === WebSocket.OPEN
   ) {
-    player.ws.send(JSON.stringify(data));
+    try {
+      player.ws.send(JSON.stringify(data));
+    } catch (err) {
+      console.error("WebSocket send error:", err.message);
+    }
   }
 }
 
 function broadcast(room, data) {
-  room.players.forEach(player => send(player, data));
+  if (!room) return;
+
+  for (const player of room.players) {
+    send(player, data);
+  }
 }
 
 function createCode() {
@@ -125,9 +149,11 @@ function roomInfo(room) {
 }
 
 function broadcastLobby(room) {
-  room.players.forEach(player => {
+  if (!room) return;
+
+  for (const player of room.players) {
     send(player, roomInfo(room));
-  });
+  }
 }
 
 function publicState(room, me) {
@@ -148,16 +174,21 @@ function publicState(room, me) {
 }
 
 function update(room) {
-  room.players.forEach(player => {
+  if (!room) return;
+
+  for (const player of room.players) {
     send(player, {
       type: "state",
       state: publicState(room, player)
     });
-  });
+  }
 }
 
 function refill(room) {
-  if (room.deck.length === 0 && room.used.length > 0) {
+  if (
+    room.deck.length === 0 &&
+    room.used.length > 0
+  ) {
     room.deck = room.used;
     room.used = [];
     shuffle(room.deck);
@@ -168,7 +199,7 @@ function draw(room, player, amount = 1) {
   for (let i = 0; i < amount; i++) {
     refill(room);
 
-    if (room.deck.length) {
+    if (room.deck.length > 0) {
       player.hand.push(room.deck.pop());
     }
   }
@@ -178,7 +209,9 @@ function next(room) {
   if (!room.players.length) return;
 
   room.turn =
-    (room.turn + room.direction + room.players.length) %
+    (room.turn +
+      room.direction +
+      room.players.length) %
     room.players.length;
 }
 
@@ -227,14 +260,22 @@ function effects(room, card) {
 
 function play(room, player, id) {
   if (!room.started) return;
-  if (room.players[room.turn] !== player) return;
-  if (room.awaitColor) return;
+
+  if (room.players[room.turn] !== player) {
+    return;
+  }
+
+  if (room.awaitColor) {
+    return;
+  }
 
   const index = player.hand.findIndex(
     card => String(card.id) === String(id)
   );
 
-  if (index === -1) return;
+  if (index === -1) {
+    return;
+  }
 
   const card = player.hand[index];
 
@@ -302,26 +343,38 @@ function startGame(room) {
 
   do {
     room.discard = room.deck.pop();
-  } while (room.discard.color === "wild");
+  } while (
+    room.discard &&
+    room.discard.color === "wild"
+  );
 
   room.color = room.discard.color;
   room.started = true;
 
-  room.players.forEach(player => {
+  for (const player of room.players) {
     send(player, {
       type: "started",
       state: publicState(room, player)
     });
-  });
+  }
 }
 
-wss.on("connection", ws => {
+/* =========================
+   WEBSOCKET
+========================= */
+
+wss.on("connection", (ws, request) => {
+  console.log(
+    "WebSocket connected:",
+    request?.socket?.remoteAddress || "unknown"
+  );
+
   let player = null;
   let room = null;
 
-  ws.send(JSON.stringify({
+  sendRaw(ws, {
     type: "connected"
-  }));
+  });
 
   ws.on("message", raw => {
     let message;
@@ -332,7 +385,12 @@ wss.on("connection", ws => {
       return;
     }
 
-    // إنشاء غرفة
+    if (!message || typeof message.type !== "string") {
+      return;
+    }
+
+    /* إنشاء غرفة */
+
     if (message.type === "create") {
       if (player) return;
 
@@ -367,7 +425,8 @@ wss.on("connection", ws => {
       return;
     }
 
-    // الانضمام
+    /* الانضمام */
+
     if (message.type === "join") {
       const code = String(message.room || "")
         .trim()
@@ -376,24 +435,24 @@ wss.on("connection", ws => {
       room = rooms.get(code);
 
       if (!room) {
-        return ws.send(JSON.stringify({
+        return sendRaw(ws, {
           type: "error",
           message: "الغرفة غير موجودة"
-        }));
+        });
       }
 
       if (room.started) {
-        return ws.send(JSON.stringify({
+        return sendRaw(ws, {
           type: "error",
           message: "اللعبة بدأت بالفعل"
-        }));
+        });
       }
 
       if (room.players.length >= 4) {
-        return ws.send(JSON.stringify({
+        return sendRaw(ws, {
           type: "error",
           message: "الغرفة ممتلئة"
-        }));
+        });
       }
 
       player = {
@@ -412,13 +471,14 @@ wss.on("connection", ws => {
     }
 
     if (!player || !room) {
-      return ws.send(JSON.stringify({
+      return sendRaw(ws, {
         type: "error",
         message: "أنشئ غرفة أو انضم لغرفة أولًا"
-      }));
+      });
     }
 
-    // بدء اللعبة
+    /* بدء اللعبة */
+
     if (message.type === "start") {
       if (room.players[0] !== player) {
         return send(player, {
@@ -427,21 +487,33 @@ wss.on("connection", ws => {
         });
       }
 
+      if (room.players.length < 1) {
+        return;
+      }
+
       startGame(room);
       return;
     }
 
-    // لعب ورقة
+    /* لعب ورقة */
+
     if (message.type === "play") {
       play(room, player, message.id);
       return;
     }
 
-    // سحب
+    /* سحب */
+
     if (message.type === "draw") {
       if (!room.started) return;
-      if (room.players[room.turn] !== player) return;
-      if (room.awaitColor) return;
+
+      if (room.players[room.turn] !== player) {
+        return;
+      }
+
+      if (room.awaitColor) {
+        return;
+      }
 
       draw(room, player);
       next(room);
@@ -449,13 +521,22 @@ wss.on("connection", ws => {
       return;
     }
 
-    // اختيار اللون
+    /* اختيار اللون */
+
     if (message.type === "color") {
       if (!room.started) return;
-      if (room.players[room.turn] !== player) return;
-      if (!room.awaitColor) return;
 
-      if (!COLORS.includes(message.color)) return;
+      if (room.players[room.turn] !== player) {
+        return;
+      }
+
+      if (!room.awaitColor) {
+        return;
+      }
+
+      if (!COLORS.includes(message.color)) {
+        return;
+      }
 
       room.color = message.color;
       room.awaitColor = false;
@@ -467,22 +548,28 @@ wss.on("connection", ws => {
       return;
     }
 
-    // UNO
+    /* UNO */
+
     if (message.type === "uno") {
-      if (room.started && player.hand.length === 1) {
+      if (
+        room.started &&
+        player.hand.length === 1
+      ) {
         broadcast(room, {
           type: "error",
-          message: "🔥 " + player.name + " قال UNO!"
+          message:
+            "🔥 " +
+            player.name +
+            " قال UNO!"
         });
       }
 
       return;
     }
 
-    // الدردشة
-    if (message.type === "chat") {
-      if (!room.started) return;
+    /* الدردشة */
 
+    if (message.type === "chat") {
       const text = String(message.text || "")
         .trim()
         .slice(0, 180);
@@ -494,11 +581,17 @@ wss.on("connection", ws => {
         name: player.name,
         text
       });
+
+      return;
     }
   });
 
   ws.on("close", () => {
-    if (!player || !room) return;
+    console.log("WebSocket disconnected");
+
+    if (!player || !room) {
+      return;
+    }
 
     room.players = room.players.filter(
       p => p !== player
@@ -518,14 +611,63 @@ wss.on("connection", ws => {
 
       broadcast(room, {
         type: "error",
-        message: "⚠️ خرج أحد اللاعبين وتم إيقاف المباراة."
+        message:
+          "⚠️ خرج أحد اللاعبين وتم إيقاف المباراة."
       });
     }
 
     broadcastLobby(room);
   });
+
+  ws.on("error", err => {
+    console.error(
+      "WebSocket error:",
+      err.message
+    );
+  });
 });
 
+/* إرسال مباشر */
+
+function sendRaw(ws, data) {
+  if (
+    ws &&
+    ws.readyState === WebSocket.OPEN
+  ) {
+    try {
+      ws.send(JSON.stringify(data));
+    } catch (err) {
+      console.error(
+        "sendRaw error:",
+        err.message
+      );
+    }
+  }
+}
+
+/* Health check لـ Render */
+
+server.on("request", (req, res) => {
+  if (req.url === "/health") {
+    res.writeHead(200, {
+      "Content-Type":
+        "application/json; charset=utf-8"
+    });
+
+    return res.end(
+      JSON.stringify({
+        ok: true,
+        websocket: true,
+        rooms: rooms.size
+      })
+    );
+  }
+});
+
+/* تشغيل السيرفر */
+
 server.listen(PORT, "0.0.0.0", () => {
-  console.log("UNO Online running on port " + PORT);
+  console.log(
+    "UNO Online running on 0.0.0.0:" + PORT
+  );
 });
