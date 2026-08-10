@@ -1,86 +1,108 @@
-<!doctype html>
-<html lang="ar" dir="rtl">
-<head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>UNO Online</title>
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>UNO Online</title>
 <style>
-*{box-sizing:border-box}body{margin:0;font-family:Tahoma,Arial;background:radial-gradient(circle at 50% 10%,#29326e,#11162f 65%,#090c1b);color:#fff;min-height:100vh}
-button,input{font:inherit}.screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}.panel{width:min(560px,94vw);background:#111632ee;border:1px solid #535e93;border-radius:24px;padding:28px;box-shadow:0 25px 80px #0008}.logo{text-align:center;font-size:68px;font-weight:1000;font-style:italic;color:#fff;text-shadow:4px 5px 0 #e51d2a,-2px -2px #ffd400}.sub{text-align:center;color:#c1c7ea}.field{width:100%;padding:14px;border-radius:13px;border:1px solid #596394;background:#0c1129;color:#fff;margin:7px 0 10px;outline:0}.row{display:flex;gap:10px}.btn{border:0;border-radius:13px;padding:13px 18px;font-weight:900;cursor:pointer;box-shadow:0 6px 0 #0004}.btn:disabled{opacity:.45;cursor:not-allowed}.primary{background:linear-gradient(135deg,#ff3930,#ff9100);color:#fff}.secondary{background:#394372;color:#fff}.green{background:#18b77a;color:#071b13}.hidden{display:none!important}
-#game{min-height:100vh;display:grid;grid-template-rows:auto 1fr auto;gap:9px;padding:12px;max-width:1500px;margin:auto}.top{display:flex;justify-content:space-between;align-items:center;gap:10px;background:#111632dd;border:1px solid #4b5686;border-radius:18px;padding:10px 14px}.brand{font-size:27px;font-weight:1000;font-style:italic;color:#ffd23e}.pills{display:flex;gap:7px;align-items:center;flex-wrap:wrap}.pill{background:#252d5a;border:1px solid #4b5688;border-radius:99px;padding:7px 11px;font-size:13px}
-.table{position:relative;min-height:590px;background:radial-gradient(ellipse at center,#17533b,#0b3028 55%,#071b1a);border:9px solid #3e2c1e;border-radius:38%/24%;box-shadow:inset 0 0 0 2px #967243,inset 0 0 100px #0009;display:flex;align-items:center;justify-content:center}.center{display:flex;gap:22px;align-items:center}.deck,.card{width:84px;height:120px;border-radius:13px;border:3px solid #fff;box-shadow:0 8px 18px #0008}.deck{background:repeating-linear-gradient(45deg,#202b66 0 7px,#394789 7px 14px);display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:1000;font-style:italic;cursor:pointer}.card{position:relative;display:flex;align-items:center;justify-content:center;color:#fff;font-size:34px;font-weight:1000;text-shadow:2px 2px 2px #0008}.red{background:#e92b35}.yellow{background:#f2c400;color:#111}.green{background:#16a968}.blue{background:#287be0}.wild{background:linear-gradient(135deg,#e52d38 0 25%,#f0c400 25% 50%,#16a968 50% 75%,#287be0 75%)}.oval{position:absolute;width:65%;height:72%;border:3px solid #ffffffaa;border-radius:50%;transform:rotate(-30deg)}.v{z-index:2}.player{position:absolute;background:#10162ddd;border:1px solid #59608a;border-radius:16px;padding:7px 12px;text-align:center;min-width:125px}.avatar{font-size:27px}.name{font-weight:900}.count{font-size:12px;color:#b8c0e8}.p0{bottom:12px;left:50%;transform:translateX(-50%)}.p1{top:13px;left:50%;transform:translateX(-50%)}.p2{left:12px;top:50%;transform:translateY(-50%)}.p3{right:12px;top:50%;transform:translateY(-50%)}.active{border-color:#ffd34d;box-shadow:0 0 25px #ffd34d55}.turn{position:absolute;bottom:55px;background:#0008;border:1px solid #ffffff2b;border-radius:99px;padding:8px 14px;font-size:13px}
-.handbox{background:#111632e8;border:1px solid #4b5686;border-radius:18px;padding:10px}.hand{display:flex;justify-content:center;align-items:flex-end;min-height:125px;overflow-x:auto;direction:ltr;padding:4px}.mycard{margin:0 -7px;cursor:pointer;transition:.16s}.mycard:hover{transform:translateY(-15px);z-index:4}.actions{text-align:center;margin-top:7px}.note{text-align:center;color:#aeb7df;font-size:12px}.modal{position:fixed;inset:0;background:#000a;display:flex;align-items:center;justify-content:center;z-index:10}.modalbox{background:#151a3b;border:1px solid #59618e;border-radius:20px;padding:20px;width:min(410px,92vw);text-align:center}.colors{display:grid;grid-template-columns:1fr 1fr;gap:10px}.cb{padding:14px;border:0;border-radius:12px;font-weight:900}.toast{position:fixed;left:50%;bottom:25px;transform:translateX(-50%);background:#050714ee;border:1px solid #6670a5;padding:11px 18px;border-radius:99px;z-index:20;opacity:0;transition:.2s;pointer-events:none}.toast.show{opacity:1}
-@media(max-width:800px){.table{min-height:470px}.card,.deck{width:70px;height:100px}.player{transform:scale(.82)}}
-</style></head>
-<body>
-<div id="login" class="screen"><div class="panel">
-<div class="logo">UNO</div><p class="sub">اللعب أونلاين مع أصدقائك — أنشئ غرفة أو انضم برمز</p>
+*{box-sizing:border-box}
+body{margin:0;font-family:Tahoma,Arial,sans-serif;color:#fff;min-height:100vh;background:
+radial-gradient(circle at 50% 15%,#24116b 0,#09041d 38%,#02030b 100%);overflow-x:hidden}
+body:before,body:after{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1}
+body:before{background:linear-gradient(115deg,transparent 20%,#6d20ff12 50%,transparent 80%);filter:blur(20px)}
+button,input{font:inherit}
+.screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+.panel{width:min(620px,94vw);background:#050611ed;border:2px solid #7c35ff;border-radius:28px;padding:30px;box-shadow:0 0 25px #7b25ff66,0 0 90px #ff20e633,inset 0 0 40px #18205c55}
+.logo{text-align:center;font-size:78px;font-weight:1000;font-style:italic;letter-spacing:-5px;color:#fff;text-shadow:5px 5px 0 #ed162c,-3px -3px 0 #ffd400,0 0 30px #ff3155}
+.sub{text-align:center;color:#d6d2ff;font-size:16px}
+.field{width:100%;padding:15px;border-radius:15px;border:1px solid #6d70a4;background:#08091b;color:#fff;margin:8px 0 11px;outline:none}
+.field:focus{border-color:#ff28c8;box-shadow:0 0 16px #ff28c855}
+.row{display:flex;gap:11px}
+.btn{border:1px solid #ffffff25;border-radius:15px;padding:14px 18px;font-weight:900;cursor:pointer;box-shadow:0 7px 0 #0007,0 0 20px #0005;transition:.15s}
+.btn:hover{transform:translateY(-2px);filter:brightness(1.12)}
+.btn:active{transform:translateY(2px);box-shadow:0 3px 0 #0007}
+.btn:disabled{opacity:.45}
+.primary{background:linear-gradient(135deg,#073eff,#8c18ff,#ff16c8);color:#fff}
+.secondary{background:linear-gradient(135deg,#171b45,#37206e);color:#fff}
+.green{background:linear-gradient(135deg,#00a968,#00e19a);color:#06130f}
+.hidden{display:none!important}
+.modal{position:fixed;inset:0;background:#000b;display:flex;align-items:center;justify-content:center;z-index:50;backdrop-filter:blur(8px)}
+.modalbox{background:#070818f5;border:2px solid #b02cff;border-radius:22px;padding:24px;width:min(460px,92vw);text-align:center;box-shadow:0 0 40px #a323ff66}
+.colors{display:grid;grid-template-columns:1fr 1fr;gap:10px}.cb{padding:14px;border:0;border-radius:12px;font-weight:900}
+#game{min-height:100vh;display:grid;grid-template-rows:auto 1fr auto;gap:12px;padding:14px;max-width:1550px;margin:auto}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px;background:#050611e8;border:1px solid #6d36d9;border-radius:18px;padding:10px 14px;box-shadow:0 0 22px #6d20ff33}
+.brand{font-size:29px;font-weight:1000;font-style:italic;color:#fff;text-shadow:2px 2px #ff204c,0 0 18px #ffd21f}
+.pill{background:#0d0f2b;border:1px solid #5e5ba0;border-radius:99px;padding:8px 12px;font-size:13px}
+.table{position:relative;min-height:590px;background:radial-gradient(ellipse at center,#123f37,#071d20 48%,#030713 100%);border:7px solid #55259a;border-radius:38%/24%;display:flex;align-items:center;justify-content:center;box-shadow:0 0 35px #7a28ff44,inset 0 0 60px #000}
+.table:before{content:"";position:absolute;inset:3%;border:1px solid #ff24d933;border-radius:38%/24%;box-shadow:inset 0 0 30px #ff24d911}
+.center{display:flex;gap:22px;z-index:2}
+.deck,.card{width:86px;height:122px;border-radius:14px;border:3px solid #fff;box-shadow:0 9px 24px #000b,0 0 15px #ffffff22}
+.deck{background:repeating-linear-gradient(45deg,#10164e 0 7px,#43208b 7px 14px);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:1000;cursor:pointer}
+.card{position:relative;display:flex;align-items:center;justify-content:center;color:#fff;font-size:35px;font-weight:1000}
+.red{background:#ed2538}.yellow{background:#f3c900;color:#111}.greenC{background:#11a968}.blue{background:#2479e7}
+.wild{background:linear-gradient(135deg,#ed2538 0 25%,#f3c900 25% 50%,#11a968 50% 75%,#2479e7 75%)}
+.oval{position:absolute;width:65%;height:72%;border:3px solid #ffffffaa;border-radius:50%;transform:rotate(-30deg)}.v{z-index:2}
+.player{position:absolute;background:#070914e8;border:1px solid #6b65a7;border-radius:16px;padding:8px 13px;text-align:center;min-width:130px;box-shadow:0 0 20px #0008}
+.p0{bottom:12px;left:50%;transform:translateX(-50%)}.p1{top:13px;left:50%;transform:translateX(-50%)}.p2{left:12px;top:50%;transform:translateY(-50%)}.p3{right:12px;top:50%;transform:translateY(-50%)}
+.active{border-color:#ffdb35;box-shadow:0 0 28px #ffdb3566}
+.handbox{background:#050611ee;border:1px solid #6534bd;border-radius:18px;padding:10px;box-shadow:0 0 25px #7b22ff22}
+.hand{display:flex;justify-content:center;align-items:flex-end;min-height:125px;overflow-x:auto;direction:ltr}
+.mycard{margin:0 -7px;cursor:pointer;transition:.16s}.mycard:hover{transform:translateY(-15px) scale(1.03);z-index:4}
+.actions{text-align:center;margin-top:7px}.note{text-align:center;color:#b8b4de;font-size:12px}.turn{position:absolute;bottom:55px;background:#050611dd;border:1px solid #ff25d5;color:#fff;border-radius:99px;padding:8px 14px;box-shadow:0 0 18px #ff25d544}
+.toast{position:fixed;left:50%;bottom:25px;transform:translateX(-50%);background:#050611f5;border:1px solid #ff25d5;padding:11px 18px;border-radius:99px;z-index:70;opacity:0;box-shadow:0 0 22px #ff25d555}.toast.show{opacity:1}
+.devnames{font-size:21px;line-height:2.2;margin:10px 0}.devline{height:1px;background:linear-gradient(90deg,transparent,#ff24c8,transparent);margin:8px 0}
+.dpyt{display:inline-flex;text-decoration:none;cursor:pointer;align-items:center;gap:10px;margin-top:6px;color:#ff2aa9;font-weight:1000;font-size:23px}
+.dpytIcon{width:46px;height:46px;border-radius:10px;background:#ff0b65;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:24px;box-shadow:0 0 16px #ff0b6566}
+@media(max-width:650px){.logo{font-size:62px}.table{min-height:500px}.card,.deck{width:70px;height:100px}.top{flex-direction:column}.p2{left:5px}.p3{right:5px}.player{min-width:95px;font-size:12px}}
+</style></head><body>
+<div id="login" class="screen"><div class="panel"><div class="logo">UNO</div><p class="sub">العب أونلاين مع أصدقائك أو العب ضد البوتات</p>
 <input id="name" class="field" maxlength="18" placeholder="اسمك" value="راشد">
 <div class="row"><button id="createBtn" class="btn primary" style="flex:1" onclick="createRoom()">إنشاء غرفة</button><button id="joinBtn" class="btn secondary" style="flex:1" onclick="joinRoom()">انضمام</button></div>
-<input id="room" class="field" maxlength="8" placeholder="رمز الغرفة" style="margin-top:12px;text-transform:uppercase">
-<p id="conn" class="note">الاتصال: جاري الاتصال...</p>
-<p class="note">إذا فتحت الملف مباشرة لن يعمل الأونلاين. شغّل <b>تشغيل_اللعبة.bat</b> أولاً.</p>
-</div></div>
+<input id="room" class="field" maxlength="8" placeholder="رمز الغرفة" style="text-transform:uppercase">
+<button class="btn green" style="width:100%" onclick="startBot()">🤖 اللعب مع بوت</button>
+<button class="btn secondary" style="width:100%;margin-top:10px" onclick="openDev()">👥 المطورين</button>
+<p id="conn" class="note">الاتصال: جاري الاتصال...</p></div></div>
 
-<div id="lobby" class="screen hidden"><div class="panel">
-<div class="logo" style="font-size:54px">UNO</div><h2 style="text-align:center">غرفة اللعب</h2>
-<div style="text-align:center;font-size:42px;font-weight:1000;letter-spacing:5px" id="roomCode">----</div>
-<p class="sub">أرسل الرمز لأصدقائك</p><div id="players"></div>
-<button id="startBtn" class="btn primary" style="width:100%;margin-top:15px" onclick="startOnline()">ابدأ اللعبة</button>
-<button class="btn secondary" style="width:100%;margin-top:10px" onclick="leave()">خروج</button>
-</div></div>
+<div id="lobby" class="screen hidden"><div class="panel"><div class="logo" style="font-size:54px">UNO</div><h2 style="text-align:center">غرفة اللعب</h2><div id="roomCode" style="text-align:center;font-size:42px;font-weight:1000"></div><p class="sub">أرسل الرمز لأصدقائك</p><div id="players"></div><button id="startBtn" class="btn primary" style="width:100%;margin-top:15px" onclick="startOnline()">ابدأ اللعبة</button><button class="btn secondary" style="width:100%;margin-top:10px" onclick="location.reload()">خروج</button></div></div>
 
-<div id="game" class="hidden">
-<div class="top"><div class="brand">UNO ONLINE</div><div class="pills"><span class="pill">👤 <b id="me"></b></span><span class="pill">غرفة: <b id="codeTop"></b></span><button class="btn secondary" onclick="leave()">خروج</button></div></div>
-<main class="table"><div id="playersBoard"></div><div class="center"><div class="deck" onclick="draw()">UNO</div><div id="discard"></div></div><div class="turn" id="turn"></div></main>
-<section class="handbox"><div class="hand" id="hand"></div><div class="actions"><button class="btn secondary" onclick="draw()">سحب ورقة</button> <button class="btn green" onclick="uno()">UNO!</button></div><div class="note" id="status"></div></section>
-</div>
+<div id="game" class="hidden"><div class="top"><div class="brand">UNO ONLINE</div><div><span class="pill">👤 <b id="me"></b></span> <span class="pill">غرفة: <b id="codeTop"></b></span> <button class="btn secondary" onclick="location.reload()">خروج</button></div></div>
+<main class="table"><div id="board"></div><div class="center"><div class="deck" onclick="drawCard()">UNO</div><div id="discard"></div></div><div id="turn" class="turn"></div></main>
+<section class="handbox"><div id="hand" class="hand"></div><div class="actions"><button class="btn secondary" onclick="drawCard()">سحب ورقة</button> <button class="btn green" onclick="sayUno()">UNO!</button></div><div id="status" class="note"></div></section></div>
 
-<div id="colorModal" class="modal hidden"><div class="modalbox"><h2>اختر اللون</h2><div class="colors">
-<button class="cb" style="background:#e92b35;color:#fff" onclick="chooseColor('red')">أحمر</button><button class="cb" style="background:#f2c400" onclick="chooseColor('yellow')">أصفر</button><button class="cb" style="background:#16a968;color:#fff" onclick="chooseColor('green')">أخضر</button><button class="cb" style="background:#287be0;color:#fff" onclick="chooseColor('blue')">أزرق</button>
-</div></div></div><div id="toast" class="toast"></div>
+<div id="colorModal" class="modal hidden"><div class="modalbox"><h2>اختر اللون</h2><div class="colors"><button class="cb" style="background:#e92b35;color:#fff" onclick="pickColor('red')">أحمر</button><button class="cb" style="background:#f2c400" onclick="pickColor('yellow')">أصفر</button><button class="cb" style="background:#16a968;color:#fff" onclick="pickColor('green')">أخضر</button><button class="cb" style="background:#287be0;color:#fff" onclick="pickColor('blue')">أزرق</button></div></div></div>
+<div id="devModal" class="modal hidden"><div class="modalbox">
+<h2 style="color:#ff29c8;font-size:30px">المطورين</h2>
+<div class="devline"></div>
+<div class="devnames"><b>رشود القحطاني</b><br><span style="color:#58d6ff">◆</span><br><b>علي الحربي</b></div>
+<div class="devline"></div>
+<h3 style="color:#ff29c8">حساب المطور</h3>
+<a class="dpyt" href="https://www.instagram.com/dpyt/" target="_blank" rel="noopener noreferrer" aria-label="dpyt 8_q على Instagram"><span class="dpytIcon">◎</span><span>dpyt</span><span style="color:#fff;margin-right:6px">8_q</span></a>
+<button class="btn secondary" style="width:100%;margin-top:18px" onclick="closeDev()">إغلاق</button>
+</div></div><div id="toast" class="toast"></div>
 
 <script>
-let ws=null, connected=false, me='',room='',isHost=false,state=null;
-const $=id=>document.getElementById(id);
-function wsURL(){return (location.protocol==='https:'?'wss://':'ws://')+location.host}
-function connect(){
- try{ws=new WebSocket(wsURL())}catch(e){setConn('تعذر إنشاء الاتصال');return}
- ws.onopen=()=>{connected=true;setConn('الاتصال: متصل ✓');$('createBtn').disabled=false;$('joinBtn').disabled=false};
- ws.onclose=()=>{connected=false;setConn('الاتصال: انقطع — شغّل الخادم ثم أعد فتح الصفحة');$('createBtn').disabled=true;$('joinBtn').disabled=true};
- ws.onerror=()=>setConn('خطأ في الاتصال');
- ws.onmessage=e=>{let m;try{m=JSON.parse(e.data)}catch{return}
-   if(m.type==='error'){toast(m.message);return}
-   if(m.type==='room'){room=m.room;isHost=m.host;showLobby(m)}
-   if(m.type==='started'){showGame();render(m.state)}
-   if(m.type==='state'){render(m.state)}
- };
-}
-function setConn(t){$('conn').textContent=t}
-function send(type,data={}){
- if(!connected){toast('الاتصال غير جاهز. شغّل اللعبة عبر تشغيل_اللعبة.bat');return false}
- ws.send(JSON.stringify({type,...data}));return true
-}
-function createRoom(){me=$('name').value.trim()||'لاعب';send('create',{name:me})}
-function joinRoom(){me=$('name').value.trim()||'لاعب';room=$('room').value.trim().toUpperCase();if(!room)return toast('اكتب رمز الغرفة');send('join',{name:me,room})}
-function showLobby(m){$('roomCode').textContent=m.room;$('codeTop').textContent=m.room;$('login').classList.add('hidden');$('lobby').classList.remove('hidden');$('startBtn').style.display=m.host?'block':'none';$('players').innerHTML=m.players.map((p,i)=>`<div class="pill" style="display:block;margin:7px 0">🎮 ${p.name}${i===0?' — المضيف':''}</div>`).join('')}
-function startOnline(){send('start',{room})}
-function leave(){location.reload()}
-function showGame(){$('login').classList.add('hidden');$('lobby').classList.add('hidden');$('game').classList.remove('hidden')}
-function lab(v){return ({skip:'⊘',reverse:'↔',draw2:'+2',draw4:'+4',wild:'★'})[v]||v}
-function card(c,click){let cl=c.color==='wild'?'wild':c.color;return `<div class="card ${cl} ${click?'mycard':''}" ${click?`onclick="play(${c.id})`:''}><span class="oval"></span><span class="v">${lab(c.value)}</span></div>`}
-function play(id){send('play',{room,id})}
-function draw(){send('draw',{room})}
-function uno(){send('uno',{room})}
-function chooseColor(c){$('colorModal').classList.add('hidden');send('color',{room,color:c})}
-function render(s){
- state=s;$('codeTop').textContent=s.room;
- let mep=s.players.find(p=>p.id===s.me);$('me').textContent=mep?mep.name:me;
- $('discard').innerHTML=card(s.discard,false);$('hand').innerHTML=mep?mep.hand.map(c=>card(c,true)).join(''):'';
- $('turn').textContent=s.players[s.turn].id===s.me?'دورك الآن':'دور '+s.players[s.turn].name;
- $('status').textContent='اللون الحالي: '+(s.color||s.discard.color);
- let slots=['p0','p1','p2','p3'];$('playersBoard').innerHTML=s.players.map((p,i)=>`<div class="player ${slots[i]} ${i===s.turn?'active':''}"><div class="avatar">🎮</div><div class="name">${p.name}</div><div class="count">${p.hand.length} أوراق</div></div>`).join('');
- if(s.awaitColor && s.players[s.turn].id===s.me)$('colorModal').classList.remove('hidden');else $('colorModal').classList.add('hidden');
-}
+let ws=null,online=false,mode='online',me='',room='',bot=null;
+const $=id=>document.getElementById(id), colors=['red','yellow','green','blue'];
 function toast(t){$('toast').textContent=t;$('toast').classList.add('show');clearTimeout(window.tt);window.tt=setTimeout(()=>$('toast').classList.remove('show'),2200)}
+function openDev(){$('devModal').classList.remove('hidden')}function closeDev(){$('devModal').classList.add('hidden')}
+function connect(){ws=new WebSocket((location.protocol==='https:'?'wss://':'ws://')+location.host);ws.onopen=()=>{online=true;$('conn').textContent='الاتصال: متصل ✓';$('createBtn').disabled=false;$('joinBtn').disabled=false};ws.onclose=()=>{online=false;$('conn').textContent='الاتصال: انقطع'};ws.onerror=()=>{$('conn').textContent='خطأ في الاتصال'};ws.onmessage=e=>{let m=JSON.parse(e.data);if(m.type==='error')return toast(m.message);if(m.type==='room')lobby(m);if(m.type==='started'){showGame();renderOnline(m.state)}if(m.type==='state')renderOnline(m.state)}}
+function send(t,o={}){if(!online)return toast('الاتصال غير جاهز');ws.send(JSON.stringify({type:t,...o}))}
+function createRoom(){mode='online';me=$('name').value.trim()||'لاعب';send('create',{name:me})}
+function joinRoom(){mode='online';me=$('name').value.trim()||'لاعب';room=$('room').value.trim().toUpperCase();if(!room)return toast('اكتب رمز الغرفة');send('join',{name:me,room})}
+function lobby(m){room=m.room;$('roomCode').textContent=room;$('login').classList.add('hidden');$('lobby').classList.remove('hidden');$('startBtn').style.display=m.host?'block':'none';$('players').innerHTML=m.players.map((p,i)=>`<div class="pill" style="display:block;margin:7px 0">🎮 ${p.name}${i?'':' — المضيف'}</div>`).join('')}
+function startOnline(){send('start',{room})}function showGame(){$('login').classList.add('hidden');$('lobby').classList.add('hidden');$('game').classList.remove('hidden')}
+function label(v){return({skip:'⊘',reverse:'↔',draw2:'+2',draw4:'+4',wild:'★'})[v]||v}
+function card(c,click=false){let cls=c.color==='wild'?'wild':c.color==='green'?'greenC':c.color;return `<div class="card ${cls} ${click?'mycard':''}" ${click?`onclick="playCard(${c.id})"`:''}><span class="oval"></span><span class="v">${label(c.value)}</span></div>`}
+function renderOnline(s){$('me').textContent=s.players.find(p=>p.id===s.me)?.name||me;$('codeTop').textContent=s.room;$('discard').innerHTML=card(s.discard);let p=s.players.find(p=>p.id===s.me);$('hand').innerHTML=p.hand.map(c=>card(c,true)).join('');$('turn').textContent=s.players[s.turn].id===s.me?'دورك الآن':'دور '+s.players[s.turn].name;$('status').textContent='اللون الحالي: '+(s.color||s.discard.color);let pos=['p0','p1','p2','p3'];$('board').innerHTML=s.players.map((p,i)=>`<div class="player ${pos[i]} ${i===s.turn?'active':''}">🎮 <b>${p.name}</b><br><small>${p.hand.length} أوراق</small></div>`).join('');if(s.awaitColor&&s.players[s.turn].id===s.me)$('colorModal').classList.remove('hidden')}
+function playCard(id){if(mode==='bot')return botPlayHuman(id);send('play',{room,id})}function drawCard(){if(mode==='bot')return botDrawHuman();send('draw',{room})}function sayUno(){if(mode==='bot'){if(bot?.players[0].hand.length===1)toast('🔥 UNO!');return}send('uno',{room})}function pickColor(c){$('colorModal').classList.add('hidden');if(mode==='bot')return botColor(c);send('color',{room,color:c})}
+
+function makeDeck(){let d=[],id=1,a=(c,v)=>d.push({id:id++,color:c,value:v});colors.forEach(c=>{a(c,'0');for(let n=1;n<10;n++){a(c,''+n);a(c,''+n)}['skip','reverse','draw2'].forEach(s=>{a(c,s);a(c,s)})});for(let i=0;i<4;i++){a('wild','wild');a('wild','draw4')}return d}
+function sh(a){for(let i=a.length-1;i;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}}
+function startBot(){mode='bot';let d=makeDeck();sh(d);bot={players:[{name:$('name').value.trim()||'راشد',hand:[]},{name:'بوت 1',hand:[]},{name:'بوت 2',hand:[]},{name:'بوت 3',hand:[]}],deck:d,used:[],discard:null,color:null,turn:0,dir:1,wild:false,over:false};for(let i=0;i<7;i++)bot.players.forEach(p=>p.hand.push(bot.deck.pop()));do bot.discard=bot.deck.pop();while(bot.discard.color==='wild');bot.color=bot.discard.color;showGame();$('codeTop').textContent='BOT';renderBot();toast('🤖 بدأت مباراة ضد 3 بوتات')}
+function refill(){if(!bot.deck.length&&bot.used.length){bot.deck=bot.used;bot.used=[];sh(bot.deck)}}function bdraw(p,n=1){for(let i=0;i<n;i++){refill();if(bot.deck.length)p.hand.push(bot.deck.pop())}}
+function valid(c){return c.color==='wild'||c.color===bot.color||c.color===bot.discard.color||c.value===bot.discard.value}
+function bnext(){bot.turn=(bot.turn+bot.dir+4)%4}
+function effects(c){if(c.value==='reverse')bot.dir*=-1;if(c.value==='skip')bnext();if(c.value==='draw2'){bdraw(bot.players[(bot.turn+bot.dir+4)%4],2);bnext()}if(c.value==='draw4'){bdraw(bot.players[(bot.turn+bot.dir+4)%4],4);bnext()}}
+function bplay(p,c){let i=p.hand.indexOf(c);if(i<0||!valid(c))return false;p.hand.splice(i,1);bot.used.push(bot.discard);bot.discard=c;bot.color=c.color==='wild'?null:c.color;if(!p.hand.length){bot.over=true;renderBot();toast('🏆 '+p.name+' فاز!');return true}if(c.color!=='wild'){effects(c);bnext()}renderBot();return true}
+function botPlayHuman(id){if(bot.over||bot.turn!==0)return;let p=bot.players[0],c=p.hand.find(x=>x.id===id);if(!c)return;if(!valid(c))return toast('هذه الورقة غير صالحة الآن');bplay(p,c);if(!bot.over&&bot.turn!==0)botTurn()}
+function botDrawHuman(){if(bot.over||bot.turn!==0)return;bdraw(bot.players[0]);bnext();renderBot();botTurn()}
+function botColor(c){if(bot.over||bot.turn!==0)return;bot.color=c;bot.wild=false;effects(bot.discard);bnext();renderBot();botTurn()}
+function botTurn(){if(bot.over||bot.turn===0)return;setTimeout(()=>{let p=bot.players[bot.turn],v=p.hand.filter(valid);if(!v.length){bdraw(p);bnext();renderBot();return botTurn()}let c=v[Math.floor(Math.random()*v.length)];bplay(p,c);if(c.color==='wild'&&!bot.over){bot.color=colors[Math.floor(Math.random()*4)];effects(c);bnext();renderBot()}if(!bot.over&&bot.turn!==0)botTurn()},650)}
+function renderBot(){let p=bot.players[0];$('me').textContent=p.name;$('discard').innerHTML=card(bot.discard);$('hand').innerHTML=p.hand.map(c=>card(c,true)).join('');$('turn').textContent=bot.over?'انتهت المباراة':bot.turn===0?'دورك الآن':'دور '+bot.players[bot.turn].name;$('status').textContent='اللون الحالي: '+bot.color+' — 🤖 ضد 3 بوتات';let pos=['p0','p1','p2','p3'];$('board').innerHTML=bot.players.map((p,i)=>`<div class="player ${pos[i]} ${i===bot.turn?'active':''}">${i?'🤖':'👤'} <b>${p.name}</b><br><small>${p.hand.length} أوراق</small></div>`).join('')}
 $('createBtn').disabled=true;$('joinBtn').disabled=true;connect();
 </script></body></html>
