@@ -60,6 +60,7 @@ wss.on('connection',ws=>{
   if(m.type==='draw'){if(room.players[room.turn]!==player||room.awaitColor)return;draw(room,player);push(room);return}
   if(m.type==='color'){if(room.players[room.turn]!==player||!room.awaitColor||!COLORS.includes(m.color))return;room.color=m.color;room.awaitColor=false;effects(room,room.discard);next(room);push(room);return}
   if(m.type==='uno'){if(room.started&&player.hand.length===1)broadcast(room,{type:'error',message:'🔥 '+player.name+' قال UNO!'})}
+  if(m.type==='chat'){let text=String(m.text||'').trim().slice(0,180);if(!text)return;broadcast(room,{type:'chat',name:player.name,text})}
  });
  ws.on('close',()=>{if(!room||!player)return;room.players=room.players.filter(p=>p!==player);if(!room.players.length){rooms.delete(room.code);return}if(room.turn>=room.players.length)room.turn=0;broadcastLobby(room);if(room.started)push(room)})
 });
