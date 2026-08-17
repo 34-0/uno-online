@@ -1,9 +1,7 @@
 {
-  "name": "uno-online-arcade",
-  "version": "2.0.0",
+  "name": "uno-online",
+  "version": "1.0.0",
   "private": true,
-  "description": "UNO Arcade with UNO, XO, Bowling and Billiards",
-  "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
