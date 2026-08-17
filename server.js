@@ -1,130 +1,102 @@
-const http = require("http");
-const fs = require("fs");
-const path = require("path");
-const crypto = require("crypto");
-const WebSocket = require("ws");
+const http = require('http');
+const fs = require('fs');
+const path = require('path');
+const crypto = require('crypto');
+const WebSocket = require('ws');
 
 const PORT = process.env.PORT || 10000;
+const ROOT = __dirname;
 const rooms = new Map();
 
-const COLORS = ["red", "yellow", "green", "blue"];
-const SPECIAL = ["skip", "reverse", "draw2"];
+const COLORS = ['red', 'yellow', 'green', 'blue'];
+const SPECIAL = ['skip', 'reverse', 'draw2'];
+const GAMES = ['uno', 'xo', 'bowling', 'billiards'];
 
-function makeDeck() {
+function send(player, data) {
+  if (player && player.ws && player.ws.readyState === WebSocket.OPEN) {
+    player.ws.send(JSON.stringify(data));
+  }
+}
+
+function broadcast(room, data) {
+  room.players.forEach((player) => send(player, data));
+}
+
+function makeCode() {
+  let code;
+  do {
+    code = Math.random().toString(36).slice(2, 6).toUpperCase();
+  } while (rooms.has(code));
+  return code;
+}
+
+function shuffle(deck) {
+  for (let i = deck.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [deck[i], deck[j]] = [deck[j], deck[i]];
+  }
+}
+
+function makeUnoDeck() {
   const deck = [];
   let id = 1;
-
   const add = (color, value) => deck.push({ id: id++, color, value });
 
   for (const color of COLORS) {
-    add(color, "0");
-
+    add(color, '0');
     for (let n = 1; n <= 9; n++) {
       add(color, String(n));
       add(color, String(n));
     }
-
-    for (const s of SPECIAL) {
-      add(color, s);
-      add(color, s);
+    for (const special of SPECIAL) {
+      add(color, special);
+      add(color, special);
     }
   }
 
   for (let i = 0; i < 4; i++) {
-    add("wild", "wild");
-    add("wild", "draw4");
+    add('wild', 'wild');
+    add('wild', 'draw4');
   }
 
   return deck;
 }
 
-function shuffle(a) {
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-}
-
-function send(ws, data) {
-  if (ws && ws.readyState === WebSocket.OPEN) {
-    ws.send(JSON.stringify(data));
-  }
-}
-
-function sendPlayer(p, data) {
-  if (p) send(p.ws, data);
-}
-
-function broadcast(room, data) {
-  room.players.forEach(p => sendPlayer(p, data));
-}
-
-function createCode() {
-  let code;
-  do {
-    code = Math.random().toString(36).substring(2, 6).toUpperCase();
-  } while (rooms.has(code));
-  return code;
-}
-
-function roomInfo(room) {
-  return {
-    type: "room",
-    room: room.code,
-    game: room.game,
-    host: room.players[0]?.id || null,
-    players: room.players.map(p => ({
-      id: p.id,
-      name: p.name
-    }))
-  };
-}
-
-function lobby(room) {
-  broadcast(room, roomInfo(room));
-}
-
-function next(room) {
-  room.turn =
-    (room.turn + room.direction + room.players.length) %
-    room.players.length;
-}
-
-function draw(room, player, amount = 1) {
+function drawCards(room, player, amount = 1) {
   for (let i = 0; i < amount; i++) {
     if (!room.deck.length && room.used.length) {
-      room.deck = room.used;
-      room.used = [];
+      room.deck = room.used.splice(0);
       shuffle(room.deck);
     }
-
-    if (room.deck.length) {
-      player.hand.push(room.deck.pop());
-    }
+    if (room.deck.length) player.hand.push(room.deck.pop());
   }
 }
 
-function validCard(card, room) {
-  if (!room.discard) return true;
+function nextTurn(room) {
+  if (!room.players.length) return;
+  room.turn = (room.turn + room.direction + room.players.length) % room.players.length;
+}
 
-  return (
-    card.color === "wild" ||
-    card.color === room.color ||
-    card.color === room.discard.color ||
-    card.value === room.discard.value
-  );
+function lobbyState(room) {
+  return {
+    type: 'room',
+    room: room.code,
+    game: room.game,
+    host: room.players[0] ? room.players[0].id : null,
+    players: room.players.map((p) => ({ id: p.id, name: p.name }))
+  };
 }
 
 function unoState(room, me) {
   return {
+    game: 'uno',
     room: room.code,
-    game: "uno",
     me: me.id,
     turn: room.turn,
     color: room.color,
     awaitColor: room.awaitColor,
     discard: room.discard,
-    players: room.players.map(p => ({
+    players: room.players.map((p) => ({
       id: p.id,
       name: p.name,
       hand: p.hand
@@ -132,708 +104,417 @@ function unoState(room, me) {
   };
 }
 
-function sendUnoState(room) {
-  room.players.forEach(p => {
-    sendPlayer(p, {
-      type: "state",
-      state: unoState(room, p)
-    });
-  });
+function validUnoCard(card, room) {
+  if (!room.discard) return true;
+  return (
+    card.color === 'wild' ||
+    card.color === room.color ||
+    card.color === room.discard.color ||
+    card.value === room.discard.value
+  );
 }
 
-function unoEffects(room, card) {
-  if (card.value === "reverse") room.direction *= -1;
+function applyUnoEffects(room, card) {
+  if (card.value === 'reverse') room.direction *= -1;
 
-  if (card.value === "skip") {
-    next(room);
+  if (card.value === 'skip') {
+    nextTurn(room);
   }
 
-  if (card.value === "draw2") {
-    next(room);
-    draw(room, room.players[room.turn], 2);
-  }
-
-  if (card.value === "draw4") {
-    next(room);
-    draw(room, room.players[room.turn], 4);
+  if (card.value === 'draw2' || card.value === 'draw4') {
+    const amount = card.value === 'draw2' ? 2 : 4;
+    const targetIndex =
+      (room.turn + room.direction + room.players.length) % room.players.length;
+    const target = room.players[targetIndex];
+    if (target) drawCards(room, target, amount);
+    nextTurn(room);
   }
 }
 
-function startUNO(room) {
-  room.deck = makeDeck();
+function startUno(room) {
+  room.deck = makeUnoDeck();
   shuffle(room.deck);
   room.used = [];
   room.turn = 0;
   room.direction = 1;
   room.color = null;
   room.awaitColor = false;
+  room.started = true;
 
-  room.players.forEach(p => p.hand = []);
+  room.players.forEach((p) => { p.hand = []; });
 
   for (let i = 0; i < 7; i++) {
-    room.players.forEach(p => draw(room, p));
+    room.players.forEach((p) => drawCards(room, p));
   }
 
   do {
     room.discard = room.deck.pop();
-  } while (room.discard.color === "wild");
+  } while (room.discard && room.discard.color === 'wild');
 
   room.color = room.discard.color;
-  room.started = true;
-
-  room.players.forEach(p => {
-    sendPlayer(p, {
-      type: "started",
-      state: unoState(room, p)
-    });
-  });
+  updateUno(room, 'started');
 }
 
-function playUNO(room, player, id) {
-  if (!room.started) return;
-  if (room.players[room.turn] !== player) return;
-  if (room.awaitColor) return;
+function updateUno(room, type = 'state') {
+  room.players.forEach((p) => send(p, { type, state: unoState(room, p) }));
+}
 
-  const index = player.hand.findIndex(
-    c => String(c.id) === String(id)
-  );
+function playUno(room, player, cardId) {
+  if (!room.started || room.players[room.turn] !== player || room.awaitColor) return;
 
-  if (index < 0) return;
+  const index = player.hand.findIndex((card) => String(card.id) === String(cardId));
+  if (index === -1) return;
 
   const card = player.hand[index];
-
-  if (!validCard(card, room)) {
-    return sendPlayer(player, {
-      type: "error",
-      message: "هذه الورقة غير صالحة الآن"
-    });
+  if (!validUnoCard(card, room)) {
+    return send(player, { type: 'error', message: 'هذه الورقة غير صالحة الآن.' });
   }
 
   player.hand.splice(index, 1);
-
-  if (room.discard) {
-    room.used.push(room.discard);
-  }
-
+  if (room.discard) room.used.push(room.discard);
   room.discard = card;
 
-  if (card.color === "wild") {
+  if (card.color === 'wild') {
     room.color = null;
     room.awaitColor = true;
   } else {
     room.color = card.color;
+    room.awaitColor = false;
   }
 
   if (player.hand.length === 0) {
-    broadcast(room, {
-      type: "error",
-      message: "🏆 " + player.name + " فاز في UNO!"
-    });
-
     room.started = false;
-    sendUnoState(room);
-    return;
+    broadcast(room, { type: 'win', message: `🏆 ${player.name} فاز في UNO!` });
+    return updateUno(room);
   }
 
   if (!room.awaitColor) {
-    unoEffects(room, card);
-    next(room);
+    applyUnoEffects(room, card);
+    nextTurn(room);
   }
 
-  sendUnoState(room);
+  updateUno(room);
 }
 
 function startXO(room) {
+  room.board = Array(9).fill(null);
+  room.turn = 0;
+  room.winner = null;
   room.started = true;
-  room.xo = {
-    board: Array(9).fill(""),
-    turn: 0,
-    winner: null,
-    draw: false
-  };
+  room.players.forEach((p, i) => { p.symbol = i === 0 ? 'X' : 'O'; });
+  broadcast(room, { type: 'started', state: xoState(room) });
+}
 
-  broadcastGame(room);
+function xoWinner(board) {
+  const lines = [
+    [0,1,2], [3,4,5], [6,7,8],
+    [0,3,6], [1,4,7], [2,5,8],
+    [0,4,8], [2,4,6]
+  ];
+  for (const [a, b, c] of lines) {
+    if (board[a] && board[a] === board[b] && board[a] === board[c]) return board[a];
+  }
+  return board.every(Boolean) ? 'draw' : null;
 }
 
 function xoState(room) {
   return {
-    game: "xo",
+    game: 'xo',
     room: room.code,
-    board: room.xo.board,
-    turn: room.xo.turn,
-    winner: room.xo.winner,
-    draw: room.xo.draw,
-    players: room.players.map(p => ({
-      id: p.id,
-      name: p.name
-    }))
+    turn: room.turn,
+    board: room.board,
+    winner: room.winner,
+    players: room.players.map((p) => ({ id: p.id, name: p.name, symbol: p.symbol }))
   };
 }
 
-function checkXO(board) {
-  const wins = [
-    [0,1,2],[3,4,5],[6,7,8],
-    [0,3,6],[1,4,7],[2,5,8],
-    [0,4,8],[2,4,6]
-  ];
+function playXO(room, player, pos) {
+  if (!room.started || room.players[room.turn] !== player) return;
+  if (!Number.isInteger(pos) || pos < 0 || pos > 8 || room.board[pos]) return;
 
-  for (const [a,b,c] of wins) {
-    if (
-      board[a] &&
-      board[a] === board[b] &&
-      board[a] === board[c]
-    ) {
-      return board[a];
-    }
+  room.board[pos] = player.symbol;
+  room.winner = xoWinner(room.board);
+  if (room.winner) {
+    room.started = false;
+  } else {
+    room.turn = (room.turn + 1) % room.players.length;
   }
-
-  if (board.every(Boolean)) return "draw";
-  return null;
-}
-
-function playXO(room, player, index) {
-  if (!room.started) return;
-  if (room.players.length < 2) return;
-  if (room.players[room.xo.turn] !== player) return;
-  if (room.xo.board[index]) return;
-  if (room.xo.winner) return;
-
-  const symbol = room.xo.turn === 0 ? "X" : "O";
-  room.xo.board[index] = symbol;
-
-  const result = checkXO(room.xo.board);
-
-  if (result === "X" || result === "O") {
-    room.xo.winner = result;
-    broadcastGame(room);
-    return;
-  }
-
-  if (result === "draw") {
-    room.xo.draw = true;
-    broadcastGame(room);
-    return;
-  }
-
-  room.xo.turn = room.xo.turn === 0 ? 1 : 0;
-  broadcastGame(room);
-}
-
-function startBowling(room) {
-  room.started = true;
-  room.bowling = {
-    turn: 0,
-    frame: 1,
-    rolls: room.players.map(() => []),
-    scores: room.players.map(() => 0)
-  };
-
-  broadcastGame(room);
+  broadcast(room, { type: 'state', state: xoState(room) });
 }
 
 function bowlingState(room) {
   return {
-    game: "bowling",
+    game: 'bowling',
     room: room.code,
-    turn: room.bowling.turn,
-    frame: room.bowling.frame,
-    scores: room.bowling.scores,
-    rolls: room.bowling.rolls,
-    players: room.players.map(p => ({
-      id: p.id,
-      name: p.name
-    }))
+    turn: room.turn,
+    frame: room.frame,
+    roll: room.roll,
+    pins: room.pins,
+    scores: room.players.map((p) => ({ id: p.id, name: p.name, score: p.score || 0 }))
   };
+}
+
+function startBowling(room) {
+  room.turn = 0;
+  room.frame = 1;
+  room.roll = 0;
+  room.pins = 10;
+  room.started = true;
+  room.players.forEach((p) => { p.score = 0; });
+  broadcast(room, { type: 'started', state: bowlingState(room) });
 }
 
 function playBowling(room, player, power) {
-  if (!room.started || !room.bowling) return;
-  if (room.players[room.bowling.turn] !== player) return;
+  if (!room.started || room.players[room.turn] !== player) return;
 
-  const pins = Math.max(
-    0,
-    Math.min(
-      10,
-      Math.floor(Number(power) || 0)
-    )
-  );
+  const value = Math.max(0.1, Math.min(1, Number(power) || 0.75));
+  const knocked = Math.min(room.pins, Math.max(0, Math.round((0.35 * Math.random() + 0.65 * value) * room.pins)));
+  room.pins -= knocked;
+  player.score = (player.score || 0) + knocked;
 
-  const rolls = room.bowling.rolls[room.bowling.turn];
-
-  rolls.push(pins);
-
-  room.bowling.scores[room.bowling.turn] += pins;
-
-  if (
-    rolls.length >= 2 ||
-    pins === 10
-  ) {
-    room.bowling.turn++;
-
-    if (room.bowling.turn >= room.players.length) {
-      room.bowling.turn = 0;
-      room.bowling.frame++;
-
-      if (room.bowling.frame > 10) {
-        const best = Math.max(...room.bowling.scores);
-        const winner =
-          room.players[room.bowling.scores.indexOf(best)];
-
-        broadcast(room, {
-          type: "error",
-          message:
-            "🏆 فاز " +
-            winner.name +
-            " في البولنق!"
-        });
-
-        room.started = false;
-      }
-    }
+  if (room.pins > 0 && room.roll === 0) {
+    room.roll = 1;
+  } else {
+    room.roll = 0;
+    room.pins = 10;
+    room.turn = (room.turn + 1) % room.players.length;
+    if (room.turn === 0) room.frame++;
   }
 
-  broadcastGame(room);
-}
+  if (room.frame > 10) {
+    room.started = false;
+    const winner = [...room.players].sort((a, b) => (b.score || 0) - (a.score || 0))[0];
+    broadcast(room, { type: 'win', message: `🎳 انتهت المباراة! الفائز: ${winner.name}` });
+  }
 
-function startBilliards(room) {
-  room.started = true;
-
-  room.billiards = {
-    turn: 0,
-    scores: room.players.map(() => 0),
-    balls: [
-      { id: 1, x: 50, y: 50, color: "white" },
-      { id: 2, x: 65, y: 45, color: "red" },
-      { id: 3, x: 68, y: 50, color: "yellow" },
-      { id: 4, x: 65, y: 55, color: "blue" },
-      { id: 5, x: 71, y: 47, color: "green" },
-      { id: 6, x: 71, y: 53, color: "purple" }
-    ]
-  };
-
-  broadcastGame(room);
+  broadcast(room, { type: 'state', state: bowlingState(room) });
 }
 
 function billiardsState(room) {
   return {
-    game: "billiards",
+    game: 'billiards',
     room: room.code,
-    turn: room.billiards.turn,
-    scores: room.billiards.scores,
-    balls: room.billiards.balls,
-    players: room.players.map(p => ({
-      id: p.id,
-      name: p.name
-    }))
+    turn: room.turn,
+    balls: room.balls,
+    scores: room.players.map((p) => ({ id: p.id, name: p.name, score: p.score || 0 }))
   };
 }
 
-function playBilliards(room, player, data) {
-  if (!room.started || !room.billiards) return;
-  if (room.players[room.billiards.turn] !== player) return;
-
-  const ball = room.billiards.balls.find(
-    b => b.id === 1
-  );
-
-  if (!ball) return;
-
-  ball.x = Math.max(
-    5,
-    Math.min(95, Number(data.x) || 50)
-  );
-
-  ball.y = Math.max(
-    8,
-    Math.min(92, Number(data.y) || 50)
-  );
-
-  room.billiards.scores[room.billiards.turn]++;
-
-  room.billiards.turn =
-    room.billiards.turn === 0 ? 1 : 0;
-
-  broadcastGame(room);
+function startBilliards(room) {
+  room.turn = 0;
+  room.started = true;
+  room.balls = Array.from({ length: 10 }, (_, i) => ({ id: i + 1, on: true }));
+  room.players.forEach((p) => { p.score = 0; });
+  broadcast(room, { type: 'started', state: billiardsState(room) });
 }
 
-function broadcastGame(room) {
-  if (!room) return;
+function playBilliards(room, player, aim) {
+  if (!room.started || room.players[room.turn] !== player) return;
 
-  let state;
+  const target = Math.max(0, Math.min(100, Number(aim) || 50));
+  const accuracy = 1 - Math.abs(50 - target) / 50;
+  const live = room.balls.filter((b) => b.on);
 
-  if (room.game === "xo") {
-    state = xoState(room);
+  if (live.length && Math.random() < 0.25 + 0.65 * accuracy) {
+    const hit = live[Math.floor(Math.random() * live.length)];
+    hit.on = false;
+    player.score = (player.score || 0) + 1;
   }
 
-  if (room.game === "bowling") {
-    state = bowlingState(room);
+  if (room.balls.some((b) => b.on)) {
+    room.turn = (room.turn + 1) % room.players.length;
+  } else {
+    room.started = false;
+    const winner = [...room.players].sort((a, b) => (b.score || 0) - (a.score || 0))[0];
+    broadcast(room, { type: 'win', message: `🎱 انتهت المباراة! الفائز: ${winner.name}` });
   }
 
-  if (room.game === "billiards") {
-    state = billiardsState(room);
-  }
+  broadcast(room, { type: 'state', state: billiardsState(room) });
+}
 
-  if (!state) return;
-
-  broadcast(room, {
-    type: "gameState",
-    state
-  });
+function newRoom(game) {
+  return {
+    code: makeCode(),
+    game,
+    players: [],
+    started: false,
+    deck: [],
+    used: [],
+    discard: null,
+    turn: 0,
+    direction: 1,
+    color: null,
+    awaitColor: false,
+    board: Array(9).fill(null),
+    winner: null,
+    frame: 1,
+    roll: 0,
+    pins: 10,
+    balls: []
+  };
 }
 
 const server = http.createServer((req, res) => {
-  let url = (req.url || "/").split("?")[0];
+  let url = (req.url || '/').split('?')[0];
+  if (url === '/') url = '/index.html';
 
-  if (url === "/") {
-    url = "/index.html";
+  const safe = path.normalize(url).replace(/^([.][.][/\\])+/, '');
+  const filePath = path.join(ROOT, safe);
+
+  if (!filePath.startsWith(ROOT) || !fs.existsSync(filePath) || !fs.statSync(filePath).isFile()) {
+    res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
+    return res.end('Not Found');
   }
-
-  const safe = path
-    .normalize(url)
-    .replace(/^(\.\.[/\\])+/, "");
-
-  const filePath = path.join(__dirname, safe);
-
-  if (
-    !fs.existsSync(filePath) ||
-    !fs.statSync(filePath).isFile()
-  ) {
-    res.writeHead(404, {
-      "Content-Type":
-        "text/plain; charset=utf-8"
-    });
-
-    return res.end("Not Found");
-  }
-
-  const ext = path.extname(filePath).toLowerCase();
 
   const mime = {
-    ".html": "text/html; charset=utf-8",
-    ".js": "application/javascript; charset=utf-8",
-    ".css": "text/css; charset=utf-8",
-    ".json": "application/json; charset=utf-8",
-    ".png": "image/png",
-    ".jpg": "image/jpeg",
-    ".jpeg": "image/jpeg",
-    ".svg": "image/svg+xml",
-    ".ico": "image/x-icon"
+    '.html': 'text/html; charset=utf-8',
+    '.js': 'application/javascript; charset=utf-8',
+    '.css': 'text/css; charset=utf-8',
+    '.json': 'application/json; charset=utf-8',
+    '.png': 'image/png',
+    '.jpg': 'image/jpeg',
+    '.jpeg': 'image/jpeg',
+    '.svg': 'image/svg+xml',
+    '.ico': 'image/x-icon'
   };
 
   res.writeHead(200, {
-    "Content-Type":
-      mime[ext] ||
-      "application/octet-stream"
+    'Content-Type': mime[path.extname(filePath).toLowerCase()] || 'application/octet-stream',
+    'Cache-Control': 'no-cache'
   });
-
-  fs.createReadStream(filePath).pipe(res);
+  res.end(fs.readFileSync(filePath));
 });
 
 const wss = new WebSocket.Server({ server });
 
-wss.on("connection", ws => {
+wss.on('connection', (ws) => {
   let player = null;
   let room = null;
 
-  send(ws, {
-    type: "connected"
-  });
+  send({ ws }, { type: 'connected' });
 
-  ws.on("message", raw => {
-    let m;
-
+  ws.on('message', (raw) => {
+    let message;
     try {
-      m = JSON.parse(raw.toString());
+      message = JSON.parse(raw.toString());
     } catch {
       return;
     }
 
-    if (m.type === "create") {
+    if (message.type === 'create') {
       if (player) return;
-
-      const code = createCode();
-
-      room = {
-        code,
-        game: m.game || "uno",
-        players: [],
-        started: false,
-        deck: [],
-        used: [],
-        discard: null,
-        turn: 0,
-        direction: 1,
-        color: null,
-        awaitColor: false
-      };
-
+      const game = GAMES.includes(message.game) ? message.game : 'uno';
+      room = newRoom(game);
       player = {
         id: crypto.randomUUID(),
-        name:
-          String(m.name || "لاعب")
-            .trim()
-            .slice(0, 18),
+        name: String(message.name || 'لاعب').trim().slice(0, 18) || 'لاعب',
         hand: [],
+        symbol: null,
+        score: 0,
         ws
       };
-
       room.players.push(player);
-      rooms.set(code, room);
-
-      sendPlayer(player, roomInfo(room));
-      return;
+      rooms.set(room.code, room);
+      return send(player, lobbyState(room));
     }
 
-    if (m.type === "join") {
-      const code =
-        String(m.room || "")
-          .trim()
-          .toUpperCase();
+    if (message.type === 'join') {
+      if (player) return;
+      const roomCode = String(message.room || '').trim().toUpperCase();
+      room = rooms.get(roomCode);
 
-      room = rooms.get(code);
-
-      if (!room) {
-        return send(ws, {
-          type: "error",
-          message: "الغرفة غير موجودة"
-        });
-      }
-
-      if (room.started) {
-        return send(ws, {
-          type: "error",
-          message: "اللعبة بدأت بالفعل"
-        });
-      }
-
-      if (room.players.length >= 4) {
-        return send(ws, {
-          type: "error",
-          message: "الغرفة ممتلئة"
-        });
-      }
-
-      if (
-        m.game &&
-        m.game !== room.game
-      ) {
-        return send(ws, {
-          type: "error",
-          message: "هذه الغرفة للعبة أخرى"
-        });
+      if (!room) return send({ ws }, { type: 'error', message: 'الغرفة غير موجودة.' });
+      if (room.started) return send({ ws }, { type: 'error', message: 'اللعبة بدأت بالفعل.' });
+      if (room.players.length >= 4) return send({ ws }, { type: 'error', message: 'الغرفة ممتلئة.' });
+      if (message.game && message.game !== room.game) {
+        return send({ ws }, { type: 'error', message: 'هذه الغرفة مخصصة للعبة مختلفة.' });
       }
 
       player = {
         id: crypto.randomUUID(),
-        name:
-          String(m.name || "لاعب")
-            .trim()
-            .slice(0, 18),
+        name: String(message.name || 'لاعب').trim().slice(0, 18) || 'لاعب',
         hand: [],
+        symbol: null,
+        score: 0,
         ws
       };
-
       room.players.push(player);
-
-      lobby(room);
-      return;
+      return broadcast(room, lobbyState(room));
     }
 
     if (!player || !room) {
-      return send(ws, {
-        type: "error",
-        message:
-          "أنشئ غرفة أو انضم لغرفة أولًا"
-      });
+      return send({ ws }, { type: 'error', message: 'أنشئ غرفة أو انضم إلى غرفة أولاً.' });
     }
 
-    if (m.type === "start") {
-      if (room.players[0] !== player) {
-        return sendPlayer(player, {
-          type: "error",
-          message:
-            "فقط المضيف يستطيع بدء اللعبة"
-        });
-      }
+    if (message.type === 'start') {
+      if (room.players[0] !== player) return send(player, { type: 'error', message: 'فقط المضيف يستطيع بدء اللعبة.' });
+      if (room.game === 'xo' && room.players.length < 2) return send(player, { type: 'error', message: 'XO أونلاين تحتاج لاعبين. أو استخدم اللعب مع بوت.' });
+      if (room.game === 'bowling' && room.players.length < 2) return send(player, { type: 'error', message: 'البولنق أونلاين يحتاج لاعبين. أو استخدم اللعب مع بوت.' });
+      if (room.game === 'billiards' && room.players.length < 2) return send(player, { type: 'error', message: 'البلياردو أونلاين يحتاج لاعبين. أو استخدم اللعب مع بوت.' });
 
-      if (room.game === "uno") {
-        startUNO(room);
-      } else if (room.game === "xo") {
-        if (room.players.length < 2) {
-          return sendPlayer(player, {
-            type: "error",
-            message:
-              "XO تحتاج لاعبين على الأقل"
-          });
-        }
-
-        startXO(room);
-      } else if (room.game === "bowling") {
-        startBowling(room);
-      } else if (room.game === "billiards") {
-        if (room.players.length < 2) {
-          return sendPlayer(player, {
-            type: "error",
-            message:
-              "البلياردو تحتاج لاعبين"
-          });
-        }
-
-        startBilliards(room);
-      }
-
+      if (room.game === 'uno') startUno(room);
+      else if (room.game === 'xo') startXO(room);
+      else if (room.game === 'bowling') startBowling(room);
+      else startBilliards(room);
       return;
     }
 
-    if (room.game === "uno") {
-      if (m.type === "play") {
-        playUNO(room, player, m.id);
-      }
+    if (message.type === 'play' && room.game === 'uno') return playUno(room, player, message.id);
 
-      if (m.type === "draw") {
-        if (
-          room.started &&
-          room.players[room.turn] === player &&
-          !room.awaitColor
-        ) {
-          draw(room, player);
-          next(room);
-          sendUnoState(room);
-        }
-      }
-
-      if (m.type === "color") {
-        if (
-          room.started &&
-          room.players[room.turn] === player &&
-          room.awaitColor &&
-          COLORS.includes(m.color)
-        ) {
-          room.color = m.color;
-          room.awaitColor = false;
-
-          unoEffects(
-            room,
-            room.discard
-          );
-
-          next(room);
-          sendUnoState(room);
-        }
-      }
-
-      if (m.type === "uno") {
-        if (
-          room.started &&
-          player.hand.length === 1
-        ) {
-          broadcast(room, {
-            type: "error",
-            message:
-              "🔥 " +
-              player.name +
-              " قال UNO!"
-          });
-        }
-      }
+    if (message.type === 'draw' && room.game === 'uno') {
+      if (!room.started || room.players[room.turn] !== player || room.awaitColor) return;
+      drawCards(room, player);
+      nextTurn(room);
+      return updateUno(room);
     }
 
-    if (room.game === "xo") {
-      if (m.type === "xoMove") {
-        playXO(
-          room,
-          player,
-          Number(m.index)
-        );
-      }
-
-      if (m.type === "xoRestart") {
-        if (room.players[0] === player) {
-          startXO(room);
-        }
-      }
+    if (message.type === 'color' && room.game === 'uno') {
+      if (!room.started || room.players[room.turn] !== player || !room.awaitColor) return;
+      if (!COLORS.includes(message.color)) return;
+      room.color = message.color;
+      room.awaitColor = false;
+      applyUnoEffects(room, room.discard);
+      nextTurn(room);
+      return updateUno(room);
     }
 
-    if (room.game === "bowling") {
-      if (m.type === "bowl") {
-        playBowling(
-          room,
-          player,
-          Number(m.power)
-        );
+    if (message.type === 'uno' && room.game === 'uno') {
+      if (room.started && player.hand.length === 1) {
+        return broadcast(room, { type: 'toast', message: `🔥 ${player.name} قال UNO!` });
       }
-
-      if (m.type === "bowlingRestart") {
-        if (room.players[0] === player) {
-          startBowling(room);
-        }
-      }
+      return;
     }
 
-    if (room.game === "billiards") {
-      if (m.type === "shoot") {
-        playBilliards(
-          room,
-          player,
-          m
-        );
-      }
+    if (message.type === 'xo' && room.game === 'xo') return playXO(room, player, Number(message.pos));
+    if (message.type === 'bowl' && room.game === 'bowling') return playBowling(room, player, message.power);
+    if (message.type === 'billiards' && room.game === 'billiards') return playBilliards(room, player, message.aim);
 
-      if (m.type === "billiardsRestart") {
-        if (room.players[0] === player) {
-          startBilliards(room);
-        }
-      }
-    }
-
-    if (m.type === "chat") {
-      const text =
-        String(m.text || "")
-          .trim()
-          .slice(0, 180);
-
-      if (!text) return;
-
-      broadcast(room, {
-        type: "chat",
-        name: player.name,
-        text
-      });
+    if (message.type === 'chat') {
+      const text = String(message.text || '').trim().slice(0, 180);
+      if (text) broadcast(room, { type: 'chat', name: player.name, text });
     }
   });
 
-  ws.on("close", () => {
+  ws.on('close', () => {
     if (!player || !room) return;
 
-    room.players =
-      room.players.filter(
-        p => p !== player
-      );
+    room.players = room.players.filter((p) => p !== player);
 
     if (!room.players.length) {
       rooms.delete(room.code);
       return;
     }
 
-    room.started = false;
+    if (room.started) {
+      room.started = false;
+      broadcast(room, { type: 'error', message: '⚠️ خرج أحد اللاعبين وتم إيقاف المباراة.' });
+    }
 
-    broadcast(room, {
-      type: "error",
-      message:
-        "⚠️ خرج لاعب من الغرفة."
-    });
-
-    lobby(room);
+    if (room.turn >= room.players.length) room.turn = 0;
+    broadcast(room, lobbyState(room));
   });
 });
 
-server.listen(
-  PORT,
-  "0.0.0.0",
-  () => {
-    console.log(
-      "UNO Online running on port " +
-      PORT
-    );
-  }
-);
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`UNO Arcade running on port ${PORT}`);
+});
